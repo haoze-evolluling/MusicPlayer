@@ -93,12 +93,12 @@ class MusicPlayer {
         });
         this.audio.addEventListener('play', () => {
             this.isPlaying = true;
-            this.playBtn.innerHTML = '<img src="./assets/pause.svg" alt="暂停">';
+            this.playBtn.querySelector('img').src = './assets/pause.svg';
             this.albumCoverElem.classList.add('playing');
         });
         this.audio.addEventListener('pause', () => {
             this.isPlaying = false;
-            this.playBtn.innerHTML = '<img src="./assets/play.svg" alt="播放">';
+            this.playBtn.querySelector('img').src = './assets/play.svg';
             this.albumCoverElem.classList.remove('playing');
         });
     }
@@ -262,7 +262,6 @@ class MusicPlayer {
     }
     
     toggleLoopMode() {
-        // 循环模式切换顺序: list -> single -> random -> list
         switch (this.loopMode) {
             case 'list':
                 this.loopMode = 'single';
@@ -271,7 +270,6 @@ class MusicPlayer {
                 this.loopMode = 'random';
                 break;
             case 'random':
-            default:
                 this.loopMode = 'list';
                 break;
         }
@@ -281,23 +279,22 @@ class MusicPlayer {
     }
     
     updateLoopModeUI() {
-        this.loopBtn.dataset.mode = this.loopMode;
-        
-        let iconSrc = './assets/repeat.svg';
-        let altText = '列表循环';
+        const loopBtnImg = this.loopBtn.querySelector('img');
         
         switch (this.loopMode) {
+            case 'list':
+                loopBtnImg.src = './assets/repeat.svg';
+                this.loopBtn.title = '列表循环';
+                break;
             case 'single':
-                iconSrc = './assets/repeat-one.svg';
-                altText = '单曲循环';
+                loopBtnImg.src = './assets/repeat-one.svg';
+                this.loopBtn.title = '单曲循环';
                 break;
             case 'random':
-                iconSrc = './assets/shuffle.svg';
-                altText = '随机播放';
+                loopBtnImg.src = './assets/shuffle.svg';
+                this.loopBtn.title = '随机播放';
                 break;
         }
-        
-        this.loopBtn.innerHTML = `<img src="${iconSrc}" alt="${altText}">`;
     }
     
     handleTrackEnd() {
@@ -311,25 +308,29 @@ class MusicPlayer {
     
     toggleMute() {
         this.audio.muted = !this.audio.muted;
-        this.updateVolumeUI();
+        this.muteBtn.querySelector('img').src = this.audio.muted ? 
+            './assets/volume-mute.svg' : 
+            (this.audio.volume < 0.5 ? './assets/volume-low.svg' : './assets/volume.svg');
     }
     
     setVolume(volume) {
-        volume = Math.max(0, Math.min(1, volume));
-        this.audio.volume = volume;
+        this.audio.volume = Math.max(0, Math.min(1, volume));
         this.audio.muted = false;
-        localStorage.setItem(CONFIG.storage.volume, volume);
+        localStorage.setItem(CONFIG.storage.volume, this.audio.volume);
         this.updateVolumeUI();
     }
     
     updateVolumeUI() {
+        this.volumeLevel.style.width = `${this.audio.volume * 100}%`;
+        
+        // 更新音量图标
+        const volumeIcon = this.muteBtn.querySelector('img');
         if (this.audio.muted) {
-            this.muteBtn.innerHTML = '<img src="./assets/volume-mute.svg" alt="取消静音">';
-            this.volumeLevel.style.width = '0%';
+            volumeIcon.src = './assets/volume-mute.svg';
+        } else if (this.audio.volume < 0.5) {
+            volumeIcon.src = './assets/volume-low.svg';
         } else {
-            const volumeIcon = this.audio.volume > 0.5 ? 'volume' : 'volume-low';
-            this.muteBtn.innerHTML = `<img src="./assets/${volumeIcon}.svg" alt="静音">`;
-            this.volumeLevel.style.width = (this.audio.volume * 100) + '%';
+            volumeIcon.src = './assets/volume.svg';
         }
     }
     

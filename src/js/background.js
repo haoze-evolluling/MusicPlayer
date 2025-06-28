@@ -5,18 +5,13 @@
 class BackgroundManager {
     constructor() {
         this.container = document.body;
-        this.currentType = localStorage.getItem(CONFIG.storage.background) || CONFIG.background.defaultType;
+        this.currentType = localStorage.getItem(CONFIG.storage.background) || 'default';
         this.customBgUrl = localStorage.getItem(CONFIG.storage.customBg) || '';
         
         this.init();
     }
     
     init() {
-        // 创建粒子背景容器
-        this.particlesContainer = document.createElement('div');
-        this.particlesContainer.id = 'particles-js';
-        this.container.appendChild(this.particlesContainer);
-        
         // 创建背景遮罩
         this.bgOverlay = document.createElement('div');
         this.bgOverlay.className = 'bg-overlay';
@@ -55,22 +50,6 @@ class BackgroundManager {
                 reader.readAsDataURL(file);
             }
         });
-        
-        // 加载particles.js库
-        this.loadParticlesJS();
-    }
-    
-    loadParticlesJS() {
-        // particles.js应该已经在HTML中引入
-        if (typeof particlesJS !== 'undefined') {
-            this.initParticles();
-        } else {
-            console.error('particles.js库未加载');
-        }
-    }
-    
-    initParticles() {
-        particlesJS('particles-js', CONFIG.background.particlesOptions);
     }
     
     setBackgroundType(type) {
@@ -81,16 +60,15 @@ class BackgroundManager {
         this.bgOverlay.style.backgroundImage = 'none';
         
         switch (type) {
-            case 'particles':
-                this.particlesContainer.style.display = 'block';
-                this.bgOverlay.style.opacity = '0';
+            case 'default':
+                // 使用默认背景图片
+                this.bgOverlay.style.backgroundImage = 'url(./pic/background01.png)';
+                this.bgOverlay.style.opacity = '0.5';
                 break;
             case 'cover':
-                this.particlesContainer.style.display = 'none';
                 // 封面背景将在播放时设置
                 break;
             case 'custom':
-                this.particlesContainer.style.display = 'none';
                 this.setCustomBackground();
                 break;
         }
