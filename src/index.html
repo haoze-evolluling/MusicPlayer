@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>箜篌 - MusicPlayer</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/animations.css">
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/layer-src/src/layer.js"></script>
+    <script src="./js/particles.min.js"></script>
+    <script src="./js/demo-data.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧区域：音乐列表 -->
+        <div class="sidebar">
+            <div class="app-header">
+                <div class="logo">
+                    <img src="./assets/logo.png" alt="箜篌">
+                    <h1>箜篌 - MusicPlayer</h1>
+                </div>
+                <div class="nav-tabs">
+                    <button class="tab-btn active" data-tab="now-playing">正在播放</button>
+                    <button class="tab-btn" data-tab="playlists">播放列表</button>
+                    <button class="tab-btn" data-tab="search">歌曲搜索</button>
+                </div>
+            </div>
+            
+            <!-- 三个内容区 -->
+            <div class="tab-content active" id="now-playing">
+                <h2>当前播放列表</h2>
+                <ul class="current-playlist"></ul>
+            </div>
+            
+            <div class="tab-content" id="playlists">
+                <h2>我的歌单</h2>
+                <div class="playlist-grid"></div>
+            </div>
+            
+            <div class="tab-content" id="search">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="搜索歌曲、歌手或专辑...">
+                    <button id="search-btn">搜索</button>
+                    <div class="source-selector">
+                        <label>
+                            <input type="radio" name="source" value="github" checked> GitHub
+                        </label>
+                        <label>
+                            <input type="radio" name="source" value="gitee"> Gitee
+                        </label>
+                    </div>
+                </div>
+                <div class="search-results"></div>
+            </div>
+        </div>
+        
+        <!-- 右侧区域：播放器主区域 -->
+        <div class="main-player">
+            <div class="player-content">
+                <div class="album-cover">
+                    <img src="./assets/default-cover.png" alt="封面" id="current-cover">
+                </div>
+                <div class="song-info">
+                    <h2 id="current-title">未播放</h2>
+                    <p id="current-artist">未知歌手</p>
+                </div>
+                
+                <!-- 歌词区域 -->
+                <div class="lyrics-container">
+                    <div class="lyrics-wrapper">
+                        <div class="lyrics-content"></div>
+                    </div>
+                    <div class="lyrics-control">
+                        <button id="toggle-translation">显示翻译</button>
+                        <button id="toggle-fullscreen">全屏歌词</button>
+                        <button id="hide-lyrics">隐藏歌词</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部控制栏 -->
+        <div class="player-controls">
+            <div class="control-buttons">
+                <button id="prev-btn" class="ctrl-btn"><img src="./assets/prev.svg" alt="上一首"></button>
+                <button id="play-btn" class="ctrl-btn"><img src="./assets/play.svg" alt="播放"></button>
+                <button id="next-btn" class="ctrl-btn"><img src="./assets/next.svg" alt="下一首"></button>
+                <button id="loop-btn" class="ctrl-btn" data-mode="list"><img src="./assets/repeat.svg" alt="循环"></button>
+            </div>
+            
+            <div class="progress-container">
+                <span id="current-time">00:00</span>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <span id="total-time">00:00</span>
+            </div>
+            
+            <div class="volume-controls">
+                <button id="mute-btn" class="ctrl-btn"><img src="./assets/volume.svg" alt="音量"></button>
+                <div class="volume-bar">
+                    <div class="volume-level"></div>
+                </div>
+                <div class="playback-speed">
+                    <select id="speed-select">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1.0x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2.0x</option>
+                        <option value="3">3.0x</option>
+                        <option value="4">4.0x</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 设置按钮和弹窗 -->
+    <button id="settings-btn" class="floating-btn"><img src="./assets/settings.svg" alt="设置"></button>
+    
+    <!-- 音频元素 -->
+    <audio id="audio-player"></audio>
+    
+    <!-- 全屏歌词覆盖层 -->
+    <div id="fullscreen-lyrics" class="fullscreen-overlay">
+        <div class="fullscreen-lyrics-content"></div>
+        <button id="exit-fullscreen">退出全屏</button>
+    </div>
+    
+    <!-- 设置面板 -->
+    <div id="settings-panel" class="settings-overlay">
+        <div class="settings-content">
+            <h2>设置</h2>
+            <div class="settings-section">
+                <h3>背景设置</h3>
+                <div class="background-options">
+                    <button class="bg-option" data-bg="default">默认</button>
+                    <button class="bg-option" data-bg="cover">封面</button>
+                    <button class="bg-option" data-bg="custom">自定义</button>
+                    <input type="file" id="custom-bg" accept="image/*" style="display: none;">
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>关于</h3>
+                <p>箜篌音乐播放器 v1.0.0</p>
+                <p>功能丰富的在线音乐播放器</p>
+            </div>
+            <button id="close-settings">关闭</button>
+        </div>
+    </div>
+
+    <!-- 版本号和调试选项 -->
+    <div class="version-info" style="position: fixed; bottom: 5px; left: 5px; font-size: 10px; opacity: 0.5; z-index: 999;">
+        <span id="app-version">v1.0.0</span>
+        <button id="toggle-debug" style="background: none; border: none; color: inherit; cursor: pointer; font-size: inherit; padding: 0;">🔧</button>
+    </div>
+    
+    <script src="./js/config.js"></script>
+    <script src="./js/background.js"></script>
+    <script src="./js/player.js"></script>
+    <script src="./js/lyrics.js"></script>
+    <script src="./js/playlist.js"></script>
+    <script src="./js/search.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/debug.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+</html> 

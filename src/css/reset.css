@@ -1,0 +1,33 @@
+/* CSS Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    overflow: hidden;
+}
+
+button, input {
+    border: none;
+    outline: none;
+    background: none;
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+ul, li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+} 

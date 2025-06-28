@@ -1,0 +1,54 @@
+{
+  "appId": "com.haoze.konghoumusicplayer",
+  "productName": "箜篌音乐播放器",
+  "copyright": "Copyright © 2023 haoze-evolluling",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "index.js",
+    "src/**/*",
+    "node_modules/**/*"
+  ],
+  "win": {
+    "target": [
+      "nsis"
+    ],
+    "icon": "src/assets/logo.png"
+  },
+  "mac": {
+    "target": [
+      "dmg"
+    ],
+    "icon": "src/assets/logo.png",
+    "category": "public.app-category.music"
+  },
+  "linux": {
+    "target": [
+      "AppImage"
+    ],
+    "category": "Audio",
+    "icon": "src/assets/logo.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "箜篌音乐播放器"
+  },
+  "dmg": {
+    "contents": [
+      {
+        "x": 130,
+        "y": 220
+      },
+      {
+        "x": 410,
+        "y": 220,
+        "type": "link",
+        "path": "/Applications"
+      }
+    ]
+  }
+} 

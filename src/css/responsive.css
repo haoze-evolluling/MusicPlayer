@@ -1,0 +1,131 @@
+/* 响应式布局 */
+
+/* 平板设备 */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 250px;
+    }
+    
+    .album-cover {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .player-content {
+        max-width: 400px;
+    }
+}
+
+/* 手机设备 */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    
+    :root {
+        --sidebar-width: 100%;
+        --controls-height: 80px;
+    }
+    
+    .content-area {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        height: 50vh;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .main-player {
+        height: 50vh;
+        padding: 10px;
+    }
+    
+    .album-cover {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 15px;
+    }
+    
+    .player-controls {
+        padding: 0 10px;
+    }
+    
+    .volume-bar {
+        width: 50px;
+    }
+    
+    .progress-container {
+        padding: 0 10px;
+    }
+    
+    .ctrl-btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .lyrics-container {
+        height: 150px;
+    }
+    
+    .settings-content {
+        width: 95%;
+    }
+}
+
+/* 小型手机设备 */
+@media (max-width: 480px) {
+    .nav-tabs {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .tab-btn {
+        border-bottom: none;
+        padding: 5px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    
+    .tab-btn.active {
+        border-bottom: none;
+        background-color: var(--primary-color);
+    }
+    
+    .album-cover {
+        width: 120px;
+        height: 120px;
+    }
+    
+    #current-title {
+        font-size: 1.2rem;
+    }
+    
+    .player-controls {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .progress-container {
+        width: 100%;
+        order: -1;
+    }
+    
+    .control-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .volume-controls {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .floating-btn {
+        bottom: 90px;
+    }
+} 

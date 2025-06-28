@@ -1,0 +1,565 @@
+/* 主样式 */
+:root {
+    --primary-color: #6c5ce7;
+    --primary-light: #a29bfe;
+    --secondary-color: #00cec9;
+    --text-color: #f5f6fa;
+    --text-secondary: #dfe6e9;
+    --bg-color: #1e272e;
+    --bg-light: #2d3436;
+    --sidebar-width: 320px;
+    --controls-height: 90px;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+/* 应用容器 */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+/* 背景粒子 */
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -2;
+}
+
+/* 背景模糊 */
+.bg-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px);
+    opacity: 0.5;
+    transition: background-image 0.5s ease;
+    z-index: -1;
+}
+
+/* 内容区域 */
+.content-area {
+    display: flex;
+    height: calc(100vh - var(--controls-height));
+}
+
+/* 左侧边栏 */
+.sidebar {
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--controls-height));
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    overflow-y: auto;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.tab-btn {
+    padding: 8px 0;
+    flex: 1;
+    color: var(--text-secondary);
+    text-align: center;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab-btn.active, .tab-btn:hover {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* 标签内容 */
+.tab-content {
+    display: none;
+    padding: 15px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 播放列表 */
+.current-playlist {
+    margin-top: 10px;
+}
+
+.current-playlist li {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: space-between;
+}
+
+.current-playlist li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.current-playlist li.active {
+    background-color: rgba(108, 92, 231, 0.3);
+}
+
+.playlist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.playlist-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.playlist-item:hover {
+    transform: scale(1.05);
+}
+
+.playlist-cover {
+    height: 120px;
+    overflow: hidden;
+}
+
+.playlist-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.playlist-name {
+    padding: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* 搜索区域 */
+.search-box {
+    margin-bottom: 15px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+#search-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#search-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.source-selector {
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+}
+
+.search-results {
+    margin-top: 15px;
+}
+
+/* 右侧主播放区 */
+.main-player {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: calc(100vh - var(--controls-height));
+    overflow-y: auto;
+}
+
+.player-content {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.album-cover {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+    animation: rotate 20s linear infinite;
+    animation-play-state: paused;
+}
+
+.album-cover.playing {
+    animation-play-state: running;
+}
+
+.album-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.song-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#current-title {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+#current-artist {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* 歌词区域 */
+.lyrics-container {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    margin-top: 20px;
+    position: relative;
+}
+
+.lyrics-wrapper {
+    height: calc(100% - 40px);
+    overflow-y: auto;
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+.lyrics-content {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.lyrics-line {
+    margin: 15px 0;
+    color: var(--text-secondary);
+    transition: all 0.3s;
+    font-size: 1rem;
+    opacity: 0.6;
+}
+
+.lyrics-line.active {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: bold;
+    opacity: 1;
+}
+
+.lyrics-control {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.lyrics-control button {
+    padding: 5px 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: background-color 0.3s;
+}
+
+.lyrics-control button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+}
+
+/* 底部控制栏 */
+.player-controls {
+    height: var(--controls-height);
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.control-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.ctrl-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.ctrl-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ctrl-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+#play-btn {
+    background-color: var(--primary-color);
+}
+
+#play-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.progress-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.progress-bar {
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    flex: 1;
+    cursor: pointer;
+    position: relative;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    width: 0;
+    position: absolute;
+    transition: width 0.1s;
+}
+
+.volume-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.volume-bar {
+    width: 80px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    position: relative;
+    cursor: pointer;
+}
+
+.volume-level {
+    height: 100%;
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    width: 100%;
+    position: absolute;
+}
+
+.playback-speed {
+    margin-left: 15px;
+}
+
+#speed-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* 浮动按钮 */
+.floating-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.floating-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--primary-light);
+}
+
+.floating-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+/* 全屏歌词 */
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.fullscreen-lyrics-content {
+    width: 80%;
+    max-width: 800px;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.fullscreen-lyrics-content .lyrics-line {
+    font-size: 1.5rem;
+    margin: 25px 0;
+}
+
+.fullscreen-lyrics-content .lyrics-line.active {
+    font-size: 2rem;
+}
+
+#exit-fullscreen {
+    position: absolute;
+    bottom: 30px;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    color: var(--text-color);
+    transition: background-color 0.3s;
+}
+
+#exit-fullscreen:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 设置面板 */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-content {
+    background-color: var(--bg-light);
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.settings-content h2 {
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.settings-section h3 {
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.background-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.bg-option {
+    padding: 8px 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.bg-option:hover, .bg-option.active {
+    background-color: var(--primary-color);
+} 
