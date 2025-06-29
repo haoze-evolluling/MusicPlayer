@@ -51,19 +51,14 @@ contextBridge.exposeInMainWorld('electron', {
   
   // 本地文件访问API
   localFiles: {
-    // 默认音乐目录
-    musicDir: '',
-    
     // 读取目录内容
     readDir: async (dirPath) => {
       try {
-        console.log('请求读取目录:', dirPath);
         if (!dirPath) {
           console.error('目录路径为空');
           return [];
         }
         const result = await ipcRenderer.invoke('read-dir', dirPath);
-        console.log(`读取到 ${result.length} 个文件/文件夹`);
         return result;
       } catch (error) {
         console.error('读取目录失败:', error);
@@ -74,7 +69,6 @@ contextBridge.exposeInMainWorld('electron', {
     // 读取文件内容
     readFile: async (filePath) => {
       try {
-        console.log('请求读取文件:', filePath);
         if (!filePath) {
           console.error('文件路径为空');
           return null;
@@ -82,13 +76,11 @@ contextBridge.exposeInMainWorld('electron', {
         
         // 规范化路径
         const normalizedPath = filePath.replace(/\\/g, '/');
-        console.log('规范化后的路径:', normalizedPath);
         
         // 调用主进程读取文件
         const data = await ipcRenderer.invoke('read-file', normalizedPath);
         
         if (data) {
-          console.log(`文件读取成功: ${normalizedPath}, 大小: ${data.length} 字节`);
           return data;
         } else {
           console.error(`文件读取失败: ${normalizedPath}`);

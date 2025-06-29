@@ -17,16 +17,6 @@ class App {
         // 确保在DOM加载完成后初始化
         const self = this;
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM加载完成，初始化应用...');
-            
-            // 使用已存在的UI管理器实例
-            if (!window.uiManager) {
-                console.error('UI管理器实例不存在，可能初始化顺序有问题');
-            } else {
-                console.log('使用现有UI管理器实例');
-            }
-            
-            // 初始化歌词管理器
             if (!window.lyricsManager) {
                 window.lyricsManager = new LyricsManager();
             }
@@ -76,12 +66,7 @@ class App {
             // 导出到全局，方便调试
             window.player = player;
             
-            console.log('应用初始化完成');
-            
-            // 初始化背景
             self.initBackground();
-            
-            // 显示欢迎信息
             self.showWelcomeMessage();
             
             // 初始化IPC通信（如果在Electron环境中）
@@ -97,7 +82,6 @@ class App {
     initBackground() {
         // 使用BgInitStatus模块初始化背景
         if (window.BgInitStatus) {
-            console.log('使用BgInitStatus初始化背景');
             const bgManager = window.BgInitStatus.initBackgroundManager();
             window.BgInitStatus.ensureBackgroundVisibility();
             
@@ -106,10 +90,8 @@ class App {
                 window.BgInitStatus.initSettingsUI();
             }, 200);
         } else {
-            console.error('BgInitStatus模块未加载，请确保bg-init.js已引入');
             // 回退方案：直接创建背景管理器实例
             if (!window.backgroundManager) {
-                console.log('回退方案：手动创建背景管理器实例');
                 window.backgroundManager = new BackgroundManager();
                 
                 // 手动初始化设置UI

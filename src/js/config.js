@@ -7,24 +7,24 @@ const CONFIG = {
     api: {
         github: {
             baseUrl: 'https://api.github.com',
-            repo: 'haoze-evolluling/MusicStorage', // 默认GitHub音乐仓库
-            defaultRepo: 'haoze-evolluling/MusicStorage' // 默认GitHub音乐仓库（用于重置）
+            repo: 'haoze-evolluling/MusicStorage',
+            defaultRepo: 'haoze-evolluling/MusicStorage'
         },
         local: {
-            supportedFormats: ['.mp3', '.wav', '.ogg', '.flac'] // 支持的音频格式
+            supportedFormats: ['.mp3', '.wav', '.ogg', '.flac']
         }
     },
     
     // 播放器默认设置
     player: {
-        defaultVolume: 0.8, // 默认音量 (0-1)
-        defaultSpeed: 1.0,  // 默认速度
-        loopMode: 'list',   // 默认循环模式: 'list', 'single', 'random'
+        defaultVolume: 0.8,
+        defaultSpeed: 1.0,
+        loopMode: 'list',
     },
     
     // 背景设置
     background: {
-        defaultType: 'default', // 默认背景: 'default', 'cover', 'custom'
+        defaultType: 'default',
     },
     
     // 存储相关键名

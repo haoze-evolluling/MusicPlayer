@@ -1,15 +1,26 @@
 /**
- * Gitee API 访问模块
- * 用于访问Gitee仓库中的音乐文件
+ * 代码仓库 API 访问模块
+ * 用于访问GitHub/Gitee仓库中的音乐文件
  */
 
-class GiteeAPI {
+class RepoAPI {
     /**
-     * 初始化Gitee API客户端
-     * @param {string} baseUrl - Gitee API基本URL
+     * 初始化仓库 API客户端
+     * @param {string} platform - 平台类型 ('github' 或 'gitee')
+     * @param {string} baseUrl - API基本URL
      */
-    constructor(baseUrl = 'https://gitee.com/api/v5') {
-        this.baseUrl = baseUrl;
+    constructor(platform = 'github', baseUrl = null) {
+        this.platform = platform.toLowerCase();
+        
+        // 根据平台设置默认API URL
+        if (!baseUrl) {
+            this.baseUrl = this.platform === 'github' 
+                ? 'https://api.github.com' 
+                : 'https://gitee.com/api/v5';
+        } else {
+            this.baseUrl = baseUrl;
+        }
+        
         this.repo = '';
     }
 
@@ -32,21 +43,28 @@ class GiteeAPI {
         }
 
         try {
-            const [owner, repo] = this.repo.split('/');
-            const url = `${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`;
+            let url;
+            if (this.platform === 'github') {
+                url = `${this.baseUrl}/repos/${this.repo}/contents/${path}`;
+            } else {
+                // Gitee API
+                const [owner, repo] = this.repo.split('/');
+                url = `${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`;
+            }
+            
             const response = await fetch(url);
 
             if (!response.ok) {
                 if (response.status === 404) {
                     return []; // 路径不存在，返回空数组
                 }
-                throw new Error(`Gitee API请求失败: ${response.status}`);
+                throw new Error(`API请求失败: ${response.status}`);
             }
 
             const data = await response.json();
             return Array.isArray(data) ? data : [data];
         } catch (error) {
-            console.error('获取Gitee仓库内容出错:', error);
+            console.error(`获取${this.platform}仓库内容出错:`, error);
             throw error;
         }
     }
@@ -57,7 +75,11 @@ class GiteeAPI {
      * @returns {string} - 原始内容URL
      */
     getRawContentUrl(path) {
-        return `https://gitee.com/${this.repo}/raw/master/${path}`;
+        if (this.platform === 'github') {
+            return `https://raw.githubusercontent.com/${this.repo}/master/${path}`;
+        } else {
+            return `https://gitee.com/${this.repo}/raw/master/${path}`;
+        }
     }
 
     /**
@@ -79,8 +101,8 @@ class GiteeAPI {
     }
 
     /**
-     * 将Gitee文件转换为音轨对象
-     * @param {Object} file - Gitee API返回的文件对象
+     * 将仓库文件转换为音轨对象
+     * @param {Object} file - API返回的文件对象
      * @returns {Object} - 音轨对象
      */
     fileToTrack(file) {
@@ -105,8 +127,14 @@ class GiteeAPI {
     }
 }
 
+// 导出GitHub API客户端
+const githubApi = new RepoAPI('github', CONFIG?.api?.github?.baseUrl);
+if (CONFIG?.api?.github?.repo) {
+    githubApi.setRepository(CONFIG.api.github.repo);
+}
+
 // 导出Gitee API客户端
-const giteeApi = new GiteeAPI(CONFIG?.api?.gitee?.baseUrl || 'https://gitee.com/api/v5');
+const giteeApi = new RepoAPI('gitee', CONFIG?.api?.gitee?.baseUrl);
 if (CONFIG?.api?.gitee?.repo) {
     giteeApi.setRepository(CONFIG.api.gitee.repo);
 } 

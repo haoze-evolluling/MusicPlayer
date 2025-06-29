@@ -9,26 +9,12 @@
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/animations.css">
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="./js/demo-data.js"></script>
     <style>
-        /* 测试图片路径 */
-        .test-image-1 {
-            background-image: url('./pic/back (1).png');
-            width: 50px;
-            height: 50px;
-            background-size: cover;
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            z-index: 9999;
-            border: 2px solid red;
-            display: none; /* 默认隐藏 */
-        }
+        /* 移除测试图片样式 */
     </style>
 </head>
 <body>
-    <!-- 测试图片元素 -->
-    <div class="test-image-1"></div>
+    <!-- 移除测试图片元素 -->
     
     <div class="app-container">
         <!-- 侧边栏 -->
@@ -157,7 +143,7 @@
     
     <!-- 脚本加载顺序很重要，确保依赖关系正确 -->
     <script src="./js/config.js"></script>
-    <script src="./js/github-api.js"></script>
+    <script src="./js/repo-api.js"></script>
     <script src="./js/localmusic.js"></script>
     <script src="./js/background.js"></script>
     <script src="./js/bg-init.js"></script>
@@ -167,7 +153,6 @@
     <script src="./js/player.js"></script>
     <script src="./js/playlist.js"></script>
     <script src="./js/search.js"></script>
-    <script src="./js/debug.js"></script>
     <!-- 响应式功能增强 -->
     <script src="./js/responsive.js"></script>
     <!-- 最后加载应用主入口 -->

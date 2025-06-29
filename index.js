@@ -2,17 +2,34 @@ const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
+const os = require('os');
 
 // 将回调式API转换为Promise
 const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
 const readFile = promisify(fs.readFile);
 
+// 禁用GPU加速，在应用启动前设置
+app.disableHardwareAcceleration();
+
+// 设置自定义缓存目录
+const userDataPath = app.getPath('userData');
+const cachePath = path.join(userDataPath, 'Cache');
+// 确保缓存目录存在
+if (!fs.existsSync(cachePath)) {
+  try {
+    fs.mkdirSync(cachePath, { recursive: true });
+  } catch (err) {
+    console.error('创建缓存目录失败:', err);
+  }
+}
+app.setPath('userData', userDataPath);
+
 let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1800,
+    width: 1300,
     height: 1000,
     autoHideMenuBar: true,
     webPreferences: {
@@ -27,11 +44,10 @@ function createWindow() {
 
   app.commandLine.appendSwitch('--allow-file-access-from-files');
   app.commandLine.appendSwitch('--disable-web-security');
+  // 添加禁用GPU缓存的命令行参数
+  app.commandLine.appendSwitch('--disable-gpu-cache');
 
   mainWindow.loadFile(path.join(__dirname, 'src/index.html'));
-  
-  // 开发模式下打开开发者工具
-  // mainWindow.webContents.openDevTools();
   
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -39,6 +55,12 @@ function createWindow() {
 }
 
 app.on('ready', createWindow);
+
+// 添加全局错误处理
+process.on('uncaughtException', (error) => {
+  console.error('未捕获的异常:', error);
+  // 可以在这里添加日志记录或显示错误对话框
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -76,12 +98,9 @@ ipcMain.handle('read-dir', async (event, dirPath) => {
     if (!dirPath || typeof dirPath !== 'string') {
       return [];
     }
-
-    console.log(`正在读取目录: ${dirPath}`);
     
     // 读取目录内容
     const files = await readdir(dirPath);
-    console.log(`读取到 ${files.length} 个文件/文件夹`);
     
     // 获取每个文件的详细信息
     const fileDetails = await Promise.all(
@@ -107,7 +126,6 @@ ipcMain.handle('read-dir', async (event, dirPath) => {
     return fileDetails.filter(file => file !== null);
   } catch (err) {
     console.error(`读取目录出错: ${dirPath}`, err);
-    console.error(err);
     return [];
   }
 });
@@ -115,13 +133,11 @@ ipcMain.handle('read-dir', async (event, dirPath) => {
 // 选择目录
 ipcMain.handle('select-directory', async () => {
   try {
-    console.log('开始显示目录选择对话框...');
     const result = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'],
       title: '选择音乐文件夹'
     });
     
-    console.log('目录选择结果:', result);
     return result;
   } catch (err) {
     console.error('选择目录出错', err);
@@ -150,8 +166,6 @@ ipcMain.handle('read-file', async (event, filePath) => {
         normalizedPath = normalizedPath.substring(1);
       }
     }
-
-    console.log(`正在读取文件: ${normalizedPath}`);
     
     // 检查文件是否存在
     try {
@@ -163,7 +177,6 @@ ipcMain.handle('read-file', async (event, filePath) => {
     
     // 读取文件内容
     const data = await readFile(normalizedPath);
-    console.log(`成功读取文件: ${normalizedPath}, 大小: ${data.length} 字节`);
     return data;
   } catch (err) {
     console.error(`读取文件出错: ${filePath}`, err);
