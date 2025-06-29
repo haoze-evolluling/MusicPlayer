@@ -24,7 +24,7 @@
 }
 
 body {
-    background-color: var(--bg-white);
+    background-color: transparent; /* 改为透明背景 */
     color: var(--text-primary);
     font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
     line-height: 1.5;
@@ -38,7 +38,7 @@ body {
     height: 100vh;
     width: 100vw;
     position: relative;
-    background-color: var(--bg-white);
+    background-color: transparent; /* 改为透明背景 */
     overflow: hidden;
 }
 
@@ -49,12 +49,9 @@ body {
     height: 100%;
     top: 0;
     left: 0;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.5; /* 增加不透明度 */
-    transition: background-image 0.5s ease;
-    z-index: -1;
+    background: linear-gradient(45deg, #ffccd5 0%, #cce6ff 100%); /* 浅粉色到浅蓝色的渐变 */
+    opacity: 0.8; /* 增加不透明度 */
+    z-index: -1; /* 确保在最底层 */
     pointer-events: none; /* 确保背景不会阻止点击事件 */
 }
 
@@ -64,7 +61,7 @@ body {
     height: calc(100vh - var(--controls-height));
 }
 
-/* 侧边栏折叠按钮 */
+/* 侧边栏折叠按钮 - 改进版 */
 .sidebar-toggle-btn {
     position: fixed;
     left: var(--sidebar-width);
@@ -77,36 +74,54 @@ body {
     border: none;
     border-radius: 0 4px 4px 0;
     cursor: pointer;
-    z-index: 100;
+    z-index: 200; /* 提高z-index确保按钮可点击 */
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: left 0.3s ease;
+    transition: left 0.3s ease; /* 与侧边栏动画速度一致 */
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* 限制箭头在按钮内部 */
 }
 
 .sidebar-toggle-btn .toggle-icon {
-    font-size: 14px;
-    transition: transform 0.3s ease;
+    position: relative;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* 明确设置侧边栏收起时的按钮位置 */
+/* 使用伪元素创建箭头，确保方向始终正确 */
+.sidebar-toggle-btn .toggle-icon::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-style: solid;
+    border-width: 2px 2px 0 0;
+    border-color: white;
+    transform: rotate(-135deg) translate(-2px, 2px); /* 指向左边的箭头，并调整位置 */
+    transition: transform 0.3s ease; /* 与侧边栏动画速度一致 */
+}
+
+/* 侧边栏收起时的按钮位置和箭头方向 */
 .sidebar.collapsed ~ .sidebar-toggle-btn {
     left: 0;
 }
 
-.sidebar.collapsed ~ .sidebar-toggle-btn .toggle-icon {
-    transform: rotate(180deg);
+.sidebar.collapsed ~ .sidebar-toggle-btn .toggle-icon::before {
+    transform: rotate(45deg) translate(2px, 2px); /* 指向右边的箭头，并调整位置 */
 }
 
 /* 左侧边栏 */
 .sidebar {
     width: var(--sidebar-width);
     height: calc(100vh - var(--controls-height));
-    background-color: var(--bg-sidebar);
+    background-color: rgba(240, 247, 255, 0.8); /* 半透明背景 */
     overflow-y: auto;
     border-right: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; /* 确保与按钮动画速度一致 */
     box-shadow: var(--shadow-light);
     position: fixed;
     top: 0;
@@ -363,8 +378,9 @@ body {
     justify-content: center;
     padding: 20px;
     overflow-y: auto;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; /* 确保与侧边栏动画速度一致 */
     z-index: 10;
+    background-color: transparent; /* 确保背景透明 */
 }
 
 /* 侧边栏收起时的播放器位置 */
@@ -389,7 +405,7 @@ body {
     width: 100%;
     margin-bottom: 30px;
     padding: 20px;
-    background-color: var(--bg-light);
+    background-color: rgba(245, 245, 245, 0.7); /* 半透明背景 */
     border-radius: 12px;
     box-shadow: var(--shadow-light);
 }
@@ -441,7 +457,7 @@ body {
     overflow: hidden;
     margin-top: 20px;
     position: relative;
-    background-color: var(--bg-light);
+    background-color: rgba(245, 245, 245, 0.7); /* 半透明背景 */
     border-radius: 12px;
     padding: 20px;
     box-shadow: var(--shadow-light);

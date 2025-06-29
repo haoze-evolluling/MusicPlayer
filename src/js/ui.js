@@ -36,9 +36,20 @@ class UIManager {
     }
     
     initEvents() {
-        // 侧边栏折叠/展开
-        this.sidebarToggleBtn.addEventListener('click', () => {
+        // 侧边栏折叠/展开 - 改进版
+        this.sidebarToggleBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // 阻止默认行为
+            e.stopPropagation(); // 阻止事件冒泡
             this.toggleSidebar();
+            console.log('侧边栏切换按钮被点击');
+        });
+        
+        // 添加触摸事件支持，解决移动设备上的问题
+        this.sidebarToggleBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.toggleSidebar();
+            console.log('侧边栏切换按钮被触摸');
         });
         
         // 标签页切换
@@ -110,51 +121,83 @@ class UIManager {
     }
     
     /**
-     * 切换侧边栏折叠状态
+     * 切换侧边栏折叠状态 - 改进版
      */
     toggleSidebar() {
-        this.sidebar.classList.toggle('collapsed');
+        // 切换侧边栏状态前，先禁用按钮，防止连续点击
+        this.sidebarToggleBtn.disabled = true;
         
-        // 使用setTimeout确保DOM已经更新
+        const isCollapsed = this.sidebar.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            this.sidebar.classList.remove('collapsed');
+            console.log('侧边栏展开');
+        } else {
+            this.sidebar.classList.add('collapsed');
+            console.log('侧边栏折叠');
+        }
+        
+        // 立即更新按钮位置，与侧边栏动画同步
+        this.updateSidebarTogglePosition();
+        
+        // 动画结束后再启用按钮
         setTimeout(() => {
-            this.updateSidebarTogglePosition();
-        }, 10);
+            this.sidebarToggleBtn.disabled = false;
+        }, 300); // 与CSS中的过渡时间一致
         
         // 保存状态到localStorage
         localStorage.setItem('sidebar_collapsed', this.sidebar.classList.contains('collapsed'));
     }
     
     /**
-     * 更新侧边栏切换按钮位置
+     * 更新侧边栏切换按钮位置 - 改进版
      */
     updateSidebarTogglePosition() {
         const isCollapsed = this.sidebar.classList.contains('collapsed');
         
-        if (isCollapsed) {
-            // 侧边栏收起时，按钮位于页面左侧边缘
-            this.sidebarToggleBtn.style.left = '0px';
-            this.sidebarToggleBtn.querySelector('.toggle-icon').innerHTML = '▶';
-        } else {
-            // 侧边栏展开时，按钮位于侧边栏右侧边缘
-            const sidebarWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width'));
-            this.sidebarToggleBtn.style.left = `${sidebarWidth}px`;
-            this.sidebarToggleBtn.querySelector('.toggle-icon').innerHTML = '◀';
+        try {
+            if (isCollapsed) {
+                // 侧边栏收起时，按钮位于页面左侧边缘
+                this.sidebarToggleBtn.style.left = '0px';
+                // 不需要手动设置箭头方向，CSS会处理
+            } else {
+                // 侧边栏展开时，按钮位于侧边栏右侧边缘
+                const sidebarWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width'));
+                this.sidebarToggleBtn.style.left = `${sidebarWidth}px`;
+                // 不需要手动设置箭头方向，CSS会处理
+            }
+        } catch (error) {
+            console.error('更新侧边栏按钮位置失败:', error);
         }
     }
     
     /**
-     * 从localStorage加载侧边栏状态
+     * 从localStorage加载侧边栏状态 - 改进版
      */
     loadSidebarState() {
-        const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
-        if (isCollapsed) {
-            this.sidebar.classList.add('collapsed');
+        try {
+            const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+            
+            if (isCollapsed) {
+                this.sidebar.classList.add('collapsed');
+                console.log('初始化: 侧边栏折叠状态');
+            } else {
+                this.sidebar.classList.remove('collapsed');
+                console.log('初始化: 侧边栏展开状态');
+            }
+            
+            // 使用更长的延迟确保DOM完全加载
+            setTimeout(() => {
+                this.updateSidebarTogglePosition();
+            }, 300);
+            
+            // 添加一个额外的延迟检查，确保按钮位置正确
+            setTimeout(() => {
+                this.updateSidebarTogglePosition();
+            }, 1000);
+        } catch (error) {
+            console.error('加载侧边栏状态失败:', error);
         }
-        
-        // 使用setTimeout确保DOM已经更新
-        setTimeout(() => {
-            this.updateSidebarTogglePosition();
-        }, 10);
     }
     
     /**
@@ -198,19 +241,8 @@ class UIManager {
      * 更新设置面板UI
      */
     updateSettingsUI() {
-        // 更新背景设置按钮状态
-        const currentBgType = localStorage.getItem(CONFIG.storage.background) || CONFIG.background.defaultType;
-        document.querySelectorAll('.bg-option').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.bg === currentBgType);
-        });
-        
-        // 如果是预设背景，高亮当前选中的预设背景
-        if (currentBgType === 'preset') {
-            const currentPreset = localStorage.getItem('konghou_preset_bg') || 'preset1';
-            document.querySelectorAll('.bg-preview').forEach(preview => {
-                preview.classList.toggle('active', preview.dataset.bg === currentPreset);
-            });
-        }
+        // 背景设置部分已被移除，因此不需要更新背景设置按钮状态
+        console.log('设置面板已更新');
     }
     
     // 显示消息弹窗

@@ -173,8 +173,6 @@ class MusicPlayer {
             const img = new Image();
             img.onload = () => {
                 this.albumCoverElem.src = currentTrack.cover;
-                // 如果背景模式为封面，则更新背景
-                backgroundManager.setCoverBackground(currentTrack.cover);
             };
             img.onerror = () => {
                 console.error('封面加载失败:', currentTrack.cover);

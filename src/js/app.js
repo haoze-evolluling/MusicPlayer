@@ -36,40 +36,21 @@ class App {
     }
     
     initBackground() {
-        // 确保背景图片正确加载
+        // 确保背景正确初始化
         if (backgroundManager) {
-            // 强制重新应用背景设置
-            const currentBgType = localStorage.getItem(CONFIG.storage.background) || 'default';
-            backgroundManager.setBackgroundType(currentBgType);
+            console.log('背景已初始化');
             
-            // 如果没有背景，默认使用预设背景
-            if (!document.querySelector('.bg-overlay').style.backgroundImage) {
-                backgroundManager.setBackgroundType('default');
-            }
-            
-            // 手动设置背景图片，确保能够显示
-            setTimeout(() => {
-                const bgOverlay = document.querySelector('.bg-overlay');
-                if (!bgOverlay.style.backgroundImage || bgOverlay.style.backgroundImage === 'none') {
-                    console.log('手动设置背景图片');
-                    bgOverlay.style.backgroundImage = 'url(./assets/pic/background.png)';
-                    bgOverlay.style.opacity = '0.5';
-                }
-            }, 100);
-        }
-        
-        // 预加载背景图片
-        const preloadImg = new Image();
-        preloadImg.onload = () => {
-            console.log('背景图片预加载成功');
+            // 强制设置背景可见性
             const bgOverlay = document.querySelector('.bg-overlay');
-            bgOverlay.style.backgroundImage = `url(${preloadImg.src})`;
-            bgOverlay.style.opacity = '0.5';
-        };
-        preloadImg.onerror = (err) => {
-            console.error('背景图片加载失败:', err);
-        };
-        preloadImg.src = './assets/pic/background.png';
+            if (bgOverlay) {
+                bgOverlay.style.display = 'block';
+                console.log('背景显示已强制设置为可见');
+            }
+        } else {
+            // 如果背景管理器未正确初始化，则在这里创建一个新实例
+            console.log('手动创建背景管理器实例');
+            new BackgroundManager();
+        }
     }
     
     showWelcomeMessage() {
