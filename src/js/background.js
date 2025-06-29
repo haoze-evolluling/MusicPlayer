@@ -57,8 +57,8 @@ class BackgroundManager {
         // 应用保存的背景设置
         this.applyBackground();
         
-        // 设置面板初始化
-        this.setupSettingsPanel();
+        // 不再自动调用设置面板初始化，由bg-init.js控制
+        // this.setupSettingsPanel();
     }
     
     // 应用背景设置
@@ -290,5 +290,5 @@ class BackgroundManager {
     }
 }
 
-// 创建背景管理器实例
-const backgroundManager = new BackgroundManager(); 
+// 不再自动创建背景管理器实例，由bg-init.js控制
+// const backgroundManager = new BackgroundManager(); 

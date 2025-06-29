@@ -4,6 +4,8 @@
 
 class UIManager {
     constructor() {
+        console.log('初始化UI管理器...');
+        
         // 侧边栏相关元素
         this.sidebar = document.querySelector('.sidebar');
         this.sidebarToggleBtn = document.getElementById('sidebar-toggle');
@@ -33,24 +35,43 @@ class UIManager {
         window.addEventListener('resize', () => {
             this.updateSidebarTogglePosition();
         });
+        
+        console.log('UI管理器初始化完成');
     }
     
     initEvents() {
         // 侧边栏折叠/展开 - 改进版
-        this.sidebarToggleBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // 阻止默认行为
-            e.stopPropagation(); // 阻止事件冒泡
-            this.toggleSidebar();
-            console.log('侧边栏切换按钮被点击');
-        });
-        
-        // 添加触摸事件支持，解决移动设备上的问题
-        this.sidebarToggleBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleSidebar();
-            console.log('侧边栏切换按钮被触摸');
-        });
+        if (this.sidebarToggleBtn) {
+            // 移除可能已存在的事件监听器
+            this.sidebarToggleBtn.removeEventListener('click', this.handleSidebarToggle);
+            this.sidebarToggleBtn.removeEventListener('touchend', this.handleSidebarToggle);
+            
+            // 使用箭头函数保持this上下文
+            this.handleSidebarToggle = (e) => {
+                e.preventDefault(); // 阻止默认行为
+                e.stopPropagation(); // 阻止事件冒泡
+                this.toggleSidebar();
+                console.log('侧边栏切换按钮被激活');
+            };
+            
+            // 添加点击事件监听器
+            this.sidebarToggleBtn.addEventListener('click', this.handleSidebarToggle);
+            
+            // 添加触摸事件支持，解决移动设备上的问题
+            this.sidebarToggleBtn.addEventListener('touchend', this.handleSidebarToggle);
+            
+            // 添加键盘事件支持
+            this.sidebarToggleBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.toggleSidebar();
+                }
+            });
+            
+            console.log('侧边栏切换按钮事件已绑定');
+        } else {
+            console.error('侧边栏切换按钮不存在');
+        }
         
         // 标签页切换
         this.tabButtons.forEach(btn => {
@@ -82,17 +103,30 @@ class UIManager {
         });
         
         // 为所有按钮添加点击缩放效果
-        document.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('mousedown', () => {
-                btn.classList.add('click-effect');
+        document.querySelectorAll('button, .file-item, .playlist-item, .tab-btn, .ctrl-btn').forEach(element => {
+            element.addEventListener('mousedown', () => {
+                element.classList.add('click-scale');
             });
             
-            btn.addEventListener('mouseup', () => {
-                btn.classList.remove('click-effect');
+            element.addEventListener('mouseup', () => {
+                element.classList.remove('click-scale');
             });
             
-            btn.addEventListener('mouseleave', () => {
-                btn.classList.remove('click-effect');
+            element.addEventListener('mouseleave', () => {
+                element.classList.remove('click-scale');
+            });
+            
+            // 添加触摸设备支持
+            element.addEventListener('touchstart', () => {
+                element.classList.add('click-scale');
+            });
+            
+            element.addEventListener('touchend', () => {
+                element.classList.remove('click-scale');
+            });
+            
+            element.addEventListener('touchcancel', () => {
+                element.classList.remove('click-scale');
             });
         });
     }
@@ -102,6 +136,11 @@ class UIManager {
      */
     toggleSidebar() {
         // 切换侧边栏状态前，先禁用按钮，防止连续点击
+        if (!this.sidebarToggleBtn) {
+            console.error('侧边栏切换按钮不存在');
+            return;
+        }
+        
         this.sidebarToggleBtn.disabled = true;
         
         const isCollapsed = this.sidebar.classList.contains('collapsed');
@@ -130,6 +169,11 @@ class UIManager {
      * 更新侧边栏切换按钮位置 - 改进版
      */
     updateSidebarTogglePosition() {
+        if (!this.sidebarToggleBtn) {
+            console.error('侧边栏切换按钮不存在');
+            return;
+        }
+        
         const isCollapsed = this.sidebar.classList.contains('collapsed');
         
         try {
@@ -310,5 +354,10 @@ class UIManager {
     }
 }
 
-// 创建UI管理器实例
-const uiManager = new UIManager(); 
+// 创建UI管理器实例并保存到全局
+if (!window.uiManager) {
+    window.uiManager = new UIManager();
+    console.log('UI管理器实例已保存到全局');
+} else {
+    console.warn('UI管理器实例已存在，跳过初始化');
+} 

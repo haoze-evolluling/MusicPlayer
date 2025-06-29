@@ -69,7 +69,7 @@
         </div>
         
         <!-- 侧边栏折叠按钮 - 改进版 -->
-        <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="折叠/展开侧边栏">
+        <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="折叠/展开侧边栏" tabindex="0" title="折叠/展开侧边栏">
             <span class="toggle-icon"></span>
         </button>
         
@@ -81,8 +81,8 @@
                         <img src="./assets/default-cover.png" alt="封面" id="current-cover">
                     </div>
                     <div class="song-info">
-                        <h2 id="current-title">未播放</h2>
-                        <p id="current-artist">未知歌手</p>
+                        <h2 id="current-title">请播放音乐</h2>
+                        <p id="current-artist"></p>
                     </div>
                 </div>
                 
@@ -92,8 +92,6 @@
                         <div class="lyrics-content"></div>
                     </div>
                     <div class="lyrics-control">
-                        <button id="toggle-translation">显示翻译</button>
-                        <button id="toggle-fullscreen">全屏歌词</button>
                         <button id="hide-lyrics">隐藏歌词</button>
                     </div>
                 </div>
@@ -144,12 +142,6 @@
     <!-- 音频元素 -->
     <audio id="audio-player"></audio>
     
-    <!-- 全屏歌词覆盖层 -->
-    <div id="fullscreen-lyrics" class="fullscreen-overlay">
-        <div class="fullscreen-lyrics-content"></div>
-        <button id="exit-fullscreen">退出全屏</button>
-    </div>
-    
     <!-- 设置面板 -->
     <div id="settings-panel" class="settings-overlay">
         <div class="settings-content">
@@ -170,16 +162,20 @@
         <button id="toggle-debug" style="background: none; border: none; color: inherit; cursor: pointer; font-size: inherit; padding: 0;">🔧</button>
     </div>
     
+    <!-- 脚本加载顺序很重要，确保依赖关系正确 -->
     <script src="./js/config.js"></script>
     <script src="./js/github-api.js"></script>
     <script src="./js/gitee-api.js"></script>
     <script src="./js/background.js"></script>
-    <script src="./js/player.js"></script>
+    <script src="./js/bg-init.js"></script>
+    <!-- 先加载UI管理器 -->
+    <script src="./js/ui.js"></script>
     <script src="./js/lyrics.js"></script>
+    <script src="./js/player.js"></script>
     <script src="./js/playlist.js"></script>
     <script src="./js/search.js"></script>
-    <script src="./js/ui.js"></script>
     <script src="./js/debug.js"></script>
+    <!-- 最后加载应用主入口 -->
     <script src="./js/app.js"></script>
 </body>
 </html> 

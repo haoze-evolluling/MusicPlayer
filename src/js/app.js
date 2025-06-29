@@ -15,41 +15,110 @@ class App {
     
     initApp() {
         // 确保在DOM加载完成后初始化
+        const self = this;
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM加载完成，初始化应用...');
+            
+            // 使用已存在的UI管理器实例
+            if (!window.uiManager) {
+                console.error('UI管理器实例不存在，可能初始化顺序有问题');
+            } else {
+                console.log('使用现有UI管理器实例');
+            }
+            
+            // 初始化歌词管理器
+            if (!window.lyricsManager) {
+                window.lyricsManager = new LyricsManager();
+            }
+            
+            // 初始化播放器
+            const player = new MusicPlayer();
+            
+            // 绑定键盘快捷键
+            document.addEventListener('keydown', (e) => {
+                // 空格键：播放/暂停
+                if (e.code === 'Space' && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    player.togglePlay();
+                }
+                
+                // 左右方向键：调整进度
+                if (e.code === 'ArrowLeft' && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    if (e.ctrlKey) {
+                        player.playPrevious(); // Ctrl+左箭头：上一首
+                    } else {
+                        player.seekRelative(-10); // 后退10秒
+                    }
+                }
+                
+                if (e.code === 'ArrowRight' && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    if (e.ctrlKey) {
+                        player.playNext(); // Ctrl+右箭头：下一首
+                    } else {
+                        player.seekRelative(10); // 前进10秒
+                    }
+                }
+                
+                // 上下方向键：调整音量
+                if (e.code === 'ArrowUp' && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    player.adjustVolume(0.1); // 增加10%音量
+                }
+                
+                if (e.code === 'ArrowDown' && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    player.adjustVolume(-0.1); // 减少10%音量
+                }
+            });
+            
+            // 导出到全局，方便调试
+            window.player = player;
+            
+            console.log('应用初始化完成');
+            
             // 初始化背景
-            this.initBackground();
+            self.initBackground();
             
             // 显示欢迎信息
-            this.showWelcomeMessage();
+            self.showWelcomeMessage();
             
             // 初始化IPC通信（如果在Electron环境中）
             if (isElectron()) {
-                this.initIPC();
+                self.initIPC();
             }
             
-            // 添加键盘快捷键支持
-            this.setupKeyboardShortcuts();
-            
             // 添加关于按钮
-            this.setupAboutButton();
+            self.setupAboutButton();
         });
     }
     
     initBackground() {
-        // 确保背景正确初始化
-        if (backgroundManager) {
-            console.log('背景已初始化');
+        // 使用BgInitStatus模块初始化背景
+        if (window.BgInitStatus) {
+            console.log('使用BgInitStatus初始化背景');
+            const bgManager = window.BgInitStatus.initBackgroundManager();
+            window.BgInitStatus.ensureBackgroundVisibility();
             
-            // 强制设置背景可见性
-            const bgOverlay = document.querySelector('.bg-overlay');
-            if (bgOverlay) {
-                bgOverlay.style.display = 'block';
-                console.log('背景显示已强制设置为可见');
-            }
+            // 确保设置UI被初始化
+            setTimeout(() => {
+                window.BgInitStatus.initSettingsUI();
+            }, 200);
         } else {
-            // 如果背景管理器未正确初始化，则在这里创建一个新实例
-            console.log('手动创建背景管理器实例');
-            new BackgroundManager();
+            console.error('BgInitStatus模块未加载，请确保bg-init.js已引入');
+            // 回退方案：直接创建背景管理器实例
+            if (!window.backgroundManager) {
+                console.log('回退方案：手动创建背景管理器实例');
+                window.backgroundManager = new BackgroundManager();
+                
+                // 手动初始化设置UI
+                setTimeout(() => {
+                    if (window.backgroundManager && typeof window.backgroundManager.setupSettingsPanel === 'function') {
+                        window.backgroundManager.setupSettingsPanel();
+                    }
+                }, 200);
+            }
         }
     }
     
@@ -70,41 +139,11 @@ class App {
             
             // 监听来自主进程的消息
             ipcRenderer.on('app-message', (event, message) => {
-                uiManager.showMessage(message);
+                if (window.uiManager) {
+                    window.uiManager.showMessage(message);
+                }
             });
         }
-    }
-    
-    setupKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            // 空格键：播放/暂停
-            if (e.code === 'Space' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-                e.preventDefault();
-                if (musicPlayer) {
-                    musicPlayer.togglePlay();
-                }
-            }
-            
-            // 左右箭头：前一首/下一首
-            if (e.code === 'ArrowLeft' && e.ctrlKey) {
-                if (musicPlayer) {
-                    musicPlayer.playPrevious();
-                }
-            }
-            
-            if (e.code === 'ArrowRight' && e.ctrlKey) {
-                if (musicPlayer) {
-                    musicPlayer.playNext();
-                }
-            }
-            
-            // ESC键：退出全屏歌词
-            if (e.code === 'Escape') {
-                if (lyricsManager && lyricsManager.isFullscreen) {
-                    lyricsManager.toggleFullscreen();
-                }
-            }
-        });
     }
     
     setupAboutButton() {
@@ -120,7 +159,9 @@ class App {
             aboutBtn.style.borderRadius = '3px';
             
             aboutBtn.addEventListener('click', () => {
-                uiManager.showAbout();
+                if (window.uiManager) {
+                    window.uiManager.showAbout();
+                }
             });
             
             aboutSection.appendChild(aboutBtn);

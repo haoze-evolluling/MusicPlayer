@@ -273,8 +273,8 @@ class MusicRepository {
                 
                 if (fileName.includes('-')) {
                     const parts = fileName.split('-');
-                    artist = parts[0].trim();
-                    title = parts.slice(1).join('-').trim();
+                    title = parts[0].trim();
+                    artist = parts.slice(1).join('-').trim();
                 }
                 
                 html += `<div class="file-item audio" data-path="${file.path}" data-download="${file.download_url || ''}">
@@ -338,8 +338,8 @@ class MusicRepository {
                 
                 if (fileName.includes('-')) {
                     const parts = fileName.split('-');
-                    artist = parts[0].trim();
-                    title = parts.slice(1).join('-').trim();
+                    title = parts[0].trim();
+                    artist = parts.slice(1).join('-').trim();
                 }
                 
                 // 创建音轨

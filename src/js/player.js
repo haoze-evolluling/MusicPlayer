@@ -24,18 +24,31 @@ class MusicPlayer {
         this.currentTitleElem = document.getElementById('current-title');
         this.currentArtistElem = document.getElementById('current-artist');
         
+        // 设置初始歌曲信息
+        this.currentTitleElem.textContent = "请播放音乐";
+        this.currentArtistElem.textContent = "";
+        
         // 播放状态
         this.isPlaying = false;
         this.currentTrackIndex = 0;
         this.playlist = [];
         this.loopMode = localStorage.getItem(CONFIG.storage.playMode) || CONFIG.player.loopMode;
         
-        // 初始化
-        this.initPlayer();
-        this.bindEvents();
+        // 确保DOM完全加载后再初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initPlayer();
+                this.bindEvents();
+            });
+        } else {
+            this.initPlayer();
+            this.bindEvents();
+        }
     }
     
     initPlayer() {
+        console.log('初始化播放器...');
+        
         // 设置初始音量
         this.audio.volume = parseFloat(localStorage.getItem(CONFIG.storage.volume)) || CONFIG.player.defaultVolume;
         this.updateVolumeUI();
@@ -113,9 +126,32 @@ class MusicPlayer {
                 this.currentTrackIndex = parseInt(savedIndex) || 0;
                 
                 if (this.playlist.length > 0) {
+                    console.log('从本地存储加载播放列表成功，当前索引:', this.currentTrackIndex);
+                    
+                    // 更新当前曲目信息
                     this.updateCurrentTrackInfo();
                     this.renderPlaylist();
+                    
+                    // 确保歌词加载
+                    const currentTrack = this.playlist[this.currentTrackIndex];
+                    if (currentTrack && currentTrack.lrc && lyricsManager) {
+                        console.log('正在加载上次播放的歌词:', currentTrack.lrc);
+                        
+                        // 使用延迟确保歌词管理器已完全初始化
+                        setTimeout(() => {
+                            lyricsManager.loadLyrics(currentTrack.lrc)
+                                .then(success => {
+                                    if (success) {
+                                        console.log('歌词加载成功');
+                                    } else {
+                                        console.warn('歌词加载失败');
+                                    }
+                                });
+                        }, 500);
+                    }
                 }
+            } else {
+                console.log('没有找到保存的播放列表');
             }
         } catch (error) {
             console.error('加载上次播放列表出错:', error);
@@ -162,6 +198,7 @@ class MusicPlayer {
         }
         
         const currentTrack = this.playlist[this.currentTrackIndex];
+        console.log('更新当前曲目信息:', currentTrack.title);
         
         // 更新UI
         this.currentTitleElem.textContent = currentTrack.title;
@@ -187,8 +224,19 @@ class MusicPlayer {
         this.audio.src = currentTrack.url;
         
         // 更新歌词
-        if (lyricsManager) {
-            lyricsManager.loadLyrics(currentTrack.lrc);
+        if (lyricsManager && currentTrack.lrc) {
+            console.log('更新歌词:', currentTrack.lrc);
+            lyricsManager.loadLyrics(currentTrack.lrc)
+                .then(success => {
+                    if (!success) {
+                        console.warn('歌词加载失败，可能是网络问题或文件不存在');
+                    }
+                });
+        } else {
+            console.log('无法加载歌词，lyricsManager:', !!lyricsManager, '歌词URL:', currentTrack.lrc);
+            if (lyricsManager) {
+                lyricsManager.clearLyrics();
+            }
         }
         
         // 高亮当前播放的歌曲
@@ -384,6 +432,30 @@ class MusicPlayer {
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    /**
+     * 相对调整播放进度
+     * @param {number} seconds - 调整的秒数，正数向前，负数向后
+     */
+    seekRelative(seconds) {
+        if (!this.audio || isNaN(this.audio.duration)) return;
+        
+        const newTime = Math.max(0, Math.min(this.audio.duration, this.audio.currentTime + seconds));
+        this.audio.currentTime = newTime;
+        console.log(`调整播放进度: ${seconds > 0 ? '+' : ''}${seconds}秒，当前位置: ${this.formatTime(newTime)}`);
+    }
+    
+    /**
+     * 调整音量
+     * @param {number} delta - 音量变化值，范围[-1, 1]
+     */
+    adjustVolume(delta) {
+        if (!this.audio) return;
+        
+        const newVolume = Math.max(0, Math.min(1, this.audio.volume + delta));
+        this.setVolume(newVolume);
+        console.log(`调整音量: ${delta > 0 ? '+' : ''}${Math.round(delta * 100)}%，当前音量: ${Math.round(newVolume * 100)}%`);
     }
 }
 
