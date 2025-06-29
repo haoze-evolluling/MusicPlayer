@@ -25,7 +25,7 @@ class MusicPlayer {
         this.currentArtistElem = document.getElementById('current-artist');
         
         // 设置初始歌曲信息
-        this.currentTitleElem.textContent = "请播放音乐";
+        this.currentTitleElem.textContent = "请选择音乐";
         this.currentArtistElem.textContent = "";
         
         // 播放状态

@@ -154,8 +154,8 @@ class LocalMusicAPI {
         // 尝试从文件名解析歌手和标题
         if (fileName.includes('-')) {
             const parts = fileName.split('-');
-            artist = parts[0].trim();
-            title = parts.slice(1).join('-').trim();
+            title = parts[0].trim();
+            artist = parts.slice(1).join('-').trim();
         }
         
         let fileUrl, lrcUrl, coverUrl;

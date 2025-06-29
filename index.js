@@ -12,8 +12,8 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1300,
-    height: 900,
+    width: 1800,
+    height: 1000,
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
