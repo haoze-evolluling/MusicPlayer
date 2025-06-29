@@ -1,4 +1,9 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const fs = require('fs');
+const { promisify } = require('util');
+
+// 将fs的回调API转换为Promise
+const readFile = promisify(fs.readFile);
 
 // 安全地暴露IPC通信接口到渲染进程
 contextBridge.exposeInMainWorld('electron', {
@@ -24,7 +29,7 @@ contextBridge.exposeInMainWorld('electron', {
     
     // 调用主进程方法并等待结果 (Promise)
     invoke: (channel, data) => {
-      const validChannels = ['read-dir', 'select-directory'];
+      const validChannels = ['read-dir', 'select-directory', 'read-file'];
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, data);
       }
@@ -40,7 +45,7 @@ contextBridge.exposeInMainWorld('electron', {
   
   // 应用信息
   appInfo: {
-    version: process.env.npm_package_version || '1.0.0',
+    version: process.env.npm_package_version || '6.26.3',
     name: 'Konghou Music Player'
   },
   
@@ -63,6 +68,35 @@ contextBridge.exposeInMainWorld('electron', {
       } catch (error) {
         console.error('读取目录失败:', error);
         return [];
+      }
+    },
+    
+    // 读取文件内容
+    readFile: async (filePath) => {
+      try {
+        console.log('请求读取文件:', filePath);
+        if (!filePath) {
+          console.error('文件路径为空');
+          return null;
+        }
+        
+        // 规范化路径
+        const normalizedPath = filePath.replace(/\\/g, '/');
+        console.log('规范化后的路径:', normalizedPath);
+        
+        // 调用主进程读取文件
+        const data = await ipcRenderer.invoke('read-file', normalizedPath);
+        
+        if (data) {
+          console.log(`文件读取成功: ${normalizedPath}, 大小: ${data.length} 字节`);
+          return data;
+        } else {
+          console.error(`文件读取失败: ${normalizedPath}`);
+          return null;
+        }
+      } catch (error) {
+        console.error('读取文件失败:', error);
+        return null;
       }
     }
   },

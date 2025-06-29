@@ -221,6 +221,7 @@ class MusicPlayer {
         }
         
         // 更新音频源
+        console.log('设置音频源:', currentTrack.url);
         this.audio.src = currentTrack.url;
         
         // 更新歌词

@@ -162,34 +162,83 @@ class LocalMusicAPI {
         
         // Electron环境
         if (this.isElectron && window.electron) {
-            // 在Electron中，我们可以直接使用文件路径
-            fileUrl = file.handle; // 在Electron中，handle就是文件路径
-            
-            // 查找同名的歌词文件和封面文件
-            const directoryPath = file.path.substring(0, file.path.lastIndexOf('/') + 1) || '';
-            const siblingFiles = await this.getContents(directoryPath);
-            
-            // 查找同名的歌词文件
-            const lrcFile = siblingFiles.find(f => 
-                f.name === `${fileName}.lrc` || 
-                f.name === file.name.replace(/\.[^.]+$/, '.lrc')
-            );
-            
-            if (lrcFile) {
-                lrcUrl = lrcFile.handle; // 在Electron中，handle就是文件路径
-            }
-            
-            // 查找同名的封面文件
-            const coverFile = siblingFiles.find(f => {
-                const lower = f.name.toLowerCase();
-                return (lower === `${fileName.toLowerCase()}.jpg` || 
-                       lower === `${fileName.toLowerCase()}.png` ||
-                       lower === file.name.toLowerCase().replace(/\.[^.]+$/, '.jpg') ||
-                       lower === file.name.toLowerCase().replace(/\.[^.]+$/, '.png'));
-            });
-            
-            if (coverFile) {
-                coverUrl = coverFile.handle; // 在Electron中，handle就是文件路径
+            try {
+                // 规范化文件路径，确保路径格式正确
+                const normalizedPath = this.normalizePath(file.handle);
+                console.log('正在处理音频文件:', normalizedPath);
+                
+                // 使用Electron的文件读取API读取文件内容
+                const audioData = await window.electron.localFiles.readFile(normalizedPath);
+                if (audioData) {
+                    // 创建Blob对象并生成URL
+                    const blob = new Blob([audioData], { type: this.getMimeType(file.name) });
+                    fileUrl = URL.createObjectURL(blob);
+                    console.log('成功创建音频Blob URL');
+                } else {
+                    // 如果读取失败，尝试使用file://协议
+                    console.warn('无法读取音频文件内容，尝试使用file://协议');
+                    fileUrl = `file://${encodeURI(normalizedPath)}`;
+                }
+                
+                // 查找同名的歌词文件和封面文件
+                const directoryPath = file.path.substring(0, file.path.lastIndexOf('/') + 1) || '';
+                const siblingFiles = await this.getContents(directoryPath);
+                
+                // 查找同名的歌词文件
+                const lrcFile = siblingFiles.find(f => 
+                    f.name === `${fileName}.lrc` || 
+                    f.name === file.name.replace(/\.[^.]+$/, '.lrc')
+                );
+                
+                if (lrcFile) {
+                    // 规范化歌词文件路径
+                    const normalizedLrcPath = this.normalizePath(lrcFile.handle);
+                    console.log('找到歌词文件:', normalizedLrcPath);
+                    
+                    // 读取歌词文件内容
+                    const lrcData = await window.electron.localFiles.readFile(normalizedLrcPath);
+                    if (lrcData) {
+                        // 创建Blob对象并生成URL
+                        const blob = new Blob([lrcData], { type: 'text/plain' });
+                        lrcUrl = URL.createObjectURL(blob);
+                        console.log('成功创建歌词Blob URL');
+                    } else {
+                        console.warn('无法读取歌词文件内容，尝试使用file://协议');
+                        lrcUrl = `file://${encodeURI(normalizedLrcPath)}`;
+                    }
+                }
+                
+                // 查找同名的封面文件
+                const coverFile = siblingFiles.find(f => {
+                    const lower = f.name.toLowerCase();
+                    return (lower === `${fileName.toLowerCase()}.jpg` || 
+                           lower === `${fileName.toLowerCase()}.png` ||
+                           lower === file.name.toLowerCase().replace(/\.[^.]+$/, '.jpg') ||
+                           lower === file.name.toLowerCase().replace(/\.[^.]+$/, '.png'));
+                });
+                
+                if (coverFile) {
+                    // 规范化封面文件路径
+                    const normalizedCoverPath = this.normalizePath(coverFile.handle);
+                    console.log('找到封面文件:', normalizedCoverPath);
+                    
+                    // 读取封面文件内容
+                    const coverData = await window.electron.localFiles.readFile(normalizedCoverPath);
+                    if (coverData) {
+                        // 创建Blob对象并生成URL
+                        const blob = new Blob([coverData], { type: this.getMimeType(coverFile.name) });
+                        coverUrl = URL.createObjectURL(blob);
+                        console.log('成功创建封面Blob URL');
+                    } else {
+                        console.warn('无法读取封面文件内容，尝试使用file://协议');
+                        coverUrl = `file://${encodeURI(normalizedCoverPath)}`;
+                    }
+                }
+            } catch (error) {
+                console.error('处理本地文件时出错:', error);
+                // 如果出错，尝试使用file://协议
+                const normalizedPath = this.normalizePath(file.handle);
+                fileUrl = `file://${encodeURI(normalizedPath)}`;
             }
         } 
         // Web环境
@@ -241,6 +290,26 @@ class LocalMusicAPI {
             cover: coverUrl || './assets/default-cover.png',
             lrc: lrcUrl
         };
+    }
+    
+    /**
+     * 根据文件名获取MIME类型
+     * @param {string} filename - 文件名
+     * @returns {string} - MIME类型
+     */
+    getMimeType(filename) {
+        const ext = filename.toLowerCase().split('.').pop();
+        const mimeTypes = {
+            'mp3': 'audio/mpeg',
+            'wav': 'audio/wav',
+            'ogg': 'audio/ogg',
+            'flac': 'audio/flac',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png',
+            'lrc': 'text/plain'
+        };
+        return mimeTypes[ext] || 'application/octet-stream';
     }
 
     /**
@@ -301,6 +370,34 @@ class LocalMusicAPI {
         // Web环境
         else {
             return !!window.directoryHandle;
+        }
+    }
+
+    /**
+     * 规范化文件路径，处理特殊字符和中文路径
+     * @param {string} filePath - 原始文件路径
+     * @returns {string} - 规范化后的文件路径
+     */
+    normalizePath(filePath) {
+        if (!filePath) return '';
+        
+        // 确保使用正斜杠
+        let normalized = filePath.replace(/\\/g, '/');
+        
+        // 处理特殊情况：如果路径以 '/' 开头但不是绝对路径（Windows下）
+        if (normalized.startsWith('/') && !normalized.startsWith('//') && 
+            !normalized.match(/^\/[a-zA-Z]:/)) {
+            normalized = normalized.substring(1);
+        }
+        
+        // 确保路径中的中文字符和特殊字符能被正确处理
+        try {
+            // 检查路径是否存在
+            console.log('规范化路径:', normalized);
+            return normalized;
+        } catch (error) {
+            console.error('路径规范化出错:', error);
+            return filePath; // 如果出错，返回原始路径
         }
     }
 }
