@@ -81,29 +81,6 @@ class UIManager {
             e.stopPropagation();
         });
         
-        // 背景设置选项
-        document.querySelectorAll('.bg-option').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const bgType = btn.dataset.bg;
-                localStorage.setItem(CONFIG.storage.background, bgType);
-                
-                // 更新按钮状态
-                document.querySelectorAll('.bg-option').forEach(b => {
-                    b.classList.toggle('active', b === btn);
-                });
-                
-                // 更新背景
-                if (backgroundManager) {
-                    backgroundManager.setBackgroundType(bgType);
-                }
-                
-                // 如果是自定义背景，触发文件选择
-                if (bgType === 'custom') {
-                    document.getElementById('custom-bg').click();
-                }
-            });
-        });
-        
         // 为所有按钮添加点击缩放效果
         document.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('mousedown', () => {
@@ -226,22 +203,29 @@ class UIManager {
      * 切换设置面板显示状态
      */
     toggleSettings() {
-        const isVisible = this.settingsPanel.style.display === 'flex';
+        if (!this.settingsPanel) {
+            console.error('设置面板不存在');
+            return;
+        }
+        
+        const isVisible = this.settingsPanel.classList.contains('active');
         
         if (isVisible) {
-            this.settingsPanel.style.display = 'none';
+            // 隐藏设置面板
+            this.settingsPanel.classList.remove('active');
         } else {
-            // 初始化设置面板中的当前值
-            this.updateSettingsUI();
-            this.settingsPanel.style.display = 'flex';
+            // 显示设置面板
+            this.settingsPanel.classList.add('active');
         }
+        
+        console.log(`设置面板状态: ${this.settingsPanel.classList.contains('active') ? '显示' : '隐藏'}`);
     }
     
     /**
      * 更新设置面板UI
      */
     updateSettingsUI() {
-        // 背景设置部分已被移除，因此不需要更新背景设置按钮状态
+        // 背景设置相关代码已移至BackgroundManager类
         console.log('设置面板已更新');
     }
     

@@ -10,8 +10,26 @@
     <link rel="stylesheet" href="./css/animations.css">
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="./js/demo-data.js"></script>
+    <style>
+        /* 测试图片路径 */
+        .test-image-1 {
+            background-image: url('./pic/back (1).png');
+            width: 50px;
+            height: 50px;
+            background-size: cover;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 9999;
+            border: 2px solid red;
+            display: none; /* 默认隐藏 */
+        }
+    </style>
 </head>
 <body>
+    <!-- 测试图片元素 -->
+    <div class="test-image-1"></div>
+    
     <div class="app-container">
         <!-- 侧边栏 -->
         <div class="sidebar">
@@ -136,6 +154,7 @@
     <div id="settings-panel" class="settings-overlay">
         <div class="settings-content">
             <h2>设置</h2>
+            <!-- 背景设置区域将由JS动态插入 -->
             <div class="settings-section">
                 <h3>关于</h3>
                 <p>箜篌音乐播放器 v1.0.0</p>

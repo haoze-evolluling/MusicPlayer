@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片路径测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .image-preview {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+        .image-path {
+            font-size: 12px;
+            word-break: break-all;
+            color: #666;
+        }
+        .success {
+            border-color: green;
+        }
+        .error {
+            border-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>图片路径测试</h1>
+    <p>这个页面用于测试不同路径的图片加载情况</p>
+    
+    <div class="image-grid" id="imageGrid">
+        <!-- 图片将通过JavaScript动态添加 -->
+    </div>
+    
+    <script>
+        // 测试不同的图片路径
+        const imagePaths = [
+            './pic/back (1).png',
+            'pic/back (1).png',
+            '../pic/back (1).png',
+            '/pic/back (1).png',
+            '/src/pic/back (1).png',
+            'src/pic/back (1).png'
+        ];
+        
+        const imageGrid = document.getElementById('imageGrid');
+        
+        // 创建图片预览
+        imagePaths.forEach((path, index) => {
+            const imageItem = document.createElement('div');
+            imageItem.className = 'image-item';
+            
+            const imagePreview = document.createElement('div');
+            imagePreview.className = 'image-preview';
+            imagePreview.style.backgroundImage = `url(${path})`;
+            
+            const imagePath = document.createElement('div');
+            imagePath.className = 'image-path';
+            imagePath.textContent = path;
+            
+            // 测试图片是否存在
+            const img = new Image();
+            img.onload = () => {
+                imageItem.classList.add('success');
+                imagePath.textContent += ' (加载成功)';
+            };
+            img.onerror = () => {
+                imageItem.classList.add('error');
+                imagePath.textContent += ' (加载失败)';
+            };
+            img.src = path;
+            
+            imageItem.appendChild(imagePreview);
+            imageItem.appendChild(imagePath);
+            imageGrid.appendChild(imageItem);
+        });
+        
+        // 测试实际图片元素
+        const testImages = document.createElement('div');
+        testImages.innerHTML = '<h2>实际图片元素测试</h2>';
+        
+        imagePaths.forEach(path => {
+            const img = document.createElement('img');
+            img.src = path;
+            img.alt = path;
+            img.style.width = '100px';
+            img.style.height = 'auto';
+            img.style.margin = '5px';
+            img.style.border = '1px solid #ddd';
+            
+            testImages.appendChild(img);
+            testImages.appendChild(document.createElement('br'));
+        });
+        
+        document.body.appendChild(testImages);
+    </script>
+</body>
+</html> 
