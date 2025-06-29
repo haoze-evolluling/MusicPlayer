@@ -1,18 +1,74 @@
 /* 响应式布局 */
 
+/* 大屏幕设备 */
+@media (min-width: 1440px) {
+    .player-content {
+        max-width: 1000px;
+    }
+    
+    .lyrics-container {
+        height: 350px;
+    }
+    
+    .album-cover {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .main-player {
+        padding-top: 10vh !important; /* 统一为10vh的向下偏移 */
+    }
+}
+
 /* 平板设备 */
 @media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 280px;
+    }
+    
+    .album-cover {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .player-content {
+        max-width: 700px;
+    }
+    
+    #current-title {
+        font-size: 1.8rem;
+    }
+    
+    .lyrics-container {
+        height: 280px;
+    }
+    
+    .main-player {
+        padding-top: 10vh !important; /* 统一为10vh的向下偏移 */
+    }
+}
+
+/* 小平板设备 */
+@media (max-width: 900px) {
     :root {
         --sidebar-width: 250px;
     }
     
-    .album-cover {
-        width: 200px;
-        height: 200px;
+    .player-content {
+        max-width: 600px;
     }
     
-    .player-content {
-        max-width: 400px;
+    .music-info-container {
+        padding: 15px;
+    }
+    
+    .album-cover {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .lyrics-container {
+        height: 250px;
     }
 }
 
@@ -32,75 +88,113 @@
     }
     
     .sidebar {
-        height: 50vh;
+        height: auto;
+        max-height: 50vh;
         width: 100%;
         border-right: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+        z-index: 100;
+    }
+    
+    .sidebar.collapsed {
+        max-height: 60px;
+        overflow: hidden;
+    }
+    
+    /* 竖屏状态下的侧边栏按钮样式 */
+    .sidebar-toggle-btn {
+        z-index: 110; /* 确保按钮在最上层 */
+    }
+    
+    /* 修复侧边栏按钮箭头方向 */
+    .sidebar-toggle-btn .toggle-icon::before {
+        transition: transform 0.3s ease;
     }
     
     .main-player {
-        height: 50vh;
-        padding: 10px;
+        left: 0;
+        width: 100%;
+        height: auto;
+        min-height: 50vh;
+        padding: 15px;
+        position: relative;
+        padding-top: 10vh !important; /* 统一为10vh的向下偏移 */
     }
     
     .album-cover {
-        width: 150px;
-        height: 150px;
-        margin-bottom: 15px;
+        width: 140px;
+        height: 140px;
+        margin-right: 20px;
+    }
+    
+    .music-info-container {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        margin-bottom: 20px;
     }
     
     .player-controls {
-        padding: 0 10px;
+        padding: 0 15px;
     }
     
     .volume-bar {
-        width: 50px;
+        width: 60px;
     }
     
     .progress-container {
-        padding: 0 10px;
+        padding: 0 15px;
     }
     
     .ctrl-btn {
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    #play-btn {
+        width: 50px;
+        height: 50px;
     }
     
     .lyrics-container {
-        height: 150px;
+        height: 200px;
     }
     
     .settings-content {
         width: 95%;
     }
+    
+    /* 改进侧边栏折叠按钮的可见性 */
+    .sidebar-toggle-btn {
+        background-color: var(--primary-dark);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    }
 }
 
 /* 小型手机设备 */
 @media (max-width: 480px) {
-    .nav-tabs {
+    .music-info-container {
         flex-direction: column;
-        gap: 5px;
-    }
-    
-    .tab-btn {
-        border-bottom: none;
-        padding: 5px;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
-    }
-    
-    .tab-btn.active {
-        border-bottom: none;
-        background-color: var(--primary-color);
+        align-items: center;
+        text-align: center;
     }
     
     .album-cover {
         width: 120px;
         height: 120px;
+        margin-right: 0;
+        margin-bottom: 15px;
     }
     
     #current-title {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+    
+    #current-artist {
+        font-size: 1rem;
+        margin-bottom: 10px;
     }
     
     .player-controls {
@@ -122,10 +216,171 @@
     
     .volume-controls {
         width: 100%;
-        justify-content: flex-end;
+        justify-content: space-between;
     }
     
     .floating-btn {
-        bottom: 90px;
+        bottom: 100px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .lyrics-container {
+        height: 150px;
+        padding: 15px;
+    }
+    
+    .lyrics-line {
+        font-size: 0.95rem;
+        margin: 10px 0;
+    }
+    
+    .lyrics-line.active {
+        font-size: 1.1rem;
+    }
+    
+    /* 优化导航标签 */
+    .nav-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 8px;
+    }
+    
+    .tab-btn {
+        border-radius: 6px;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 8px 0;
+    }
+    
+    .tab-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    /* 优化搜索区域 */
+    .search-box {
+        margin-bottom: 15px;
+    }
+    
+    #search-input {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .source-selector {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .repo-settings-btn {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 5px;
+    }
+    
+    .main-player {
+        padding-top: 10vh !important; /* 统一为10vh的向下偏移 */
+    }
+}
+
+/* 超小屏幕设备 */
+@media (max-width: 360px) {
+    .album-cover {
+        width: 100px;
+        height: 100px;
+    }
+    
+    #current-title {
+        font-size: 1.2rem;
+    }
+    
+    .lyrics-container {
+        height: 120px;
+    }
+    
+    .ctrl-btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    #play-btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .volume-bar {
+        width: 40px;
+    }
+    
+    .playback-speed {
+        margin-left: 10px;
+    }
+    
+    #speed-select {
+        padding: 5px;
+        font-size: 0.8rem;
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+    .sidebar {
+        height: 100vh;
+        width: var(--sidebar-width);
+        max-height: none;
+        position: fixed;
+    }
+    
+    .main-player {
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        height: calc(100vh - var(--controls-height));
+    }
+    
+    .sidebar.collapsed ~ .main-player {
+        left: 0;
+        width: 100%;
+    }
+    
+    .sidebar-toggle-btn {
+        top: 50%;
+        left: var(--sidebar-width);
+        bottom: auto;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 70px;
+        border-radius: 0 4px 4px 0;
+    }
+    
+    .sidebar.collapsed ~ .sidebar-toggle-btn {
+        left: 0;
+    }
+    
+    .sidebar.collapsed ~ .sidebar-toggle-btn .toggle-icon::before {
+        transform: rotate(45deg) translate(2px, 2px);
+    }
+    
+    .music-info-container {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+    }
+    
+    .album-cover {
+        width: 100px;
+        height: 100px;
+        margin-right: 15px;
+        margin-bottom: 0;
+    }
+    
+    .lyrics-container {
+        height: 120px;
+    }
+    
+    .player-controls {
+        flex-direction: row;
+        height: var(--controls-height);
     }
 } 

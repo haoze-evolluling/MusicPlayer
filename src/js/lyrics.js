@@ -7,45 +7,23 @@ class LyricsManager {
         this.lyricsContent = document.querySelector('.lyrics-content');
         this.lyricsWrapper = document.querySelector('.lyrics-wrapper');
         this.container = document.querySelector('.lyrics-container');
-        this.hideLyricsBtn = document.getElementById('hide-lyrics');
         
         this.lyrics = [];
         this.activeLyricIndex = -1;
         
-        // 初始化歌词显示状态
-        this.initLyricsVisibility();
-        this.bindEvents();
-        
         // 显示初始化消息
         this.clearLyrics();
         console.log('歌词管理器已初始化');
-    }
-    
-    // 初始化歌词显示状态，从localStorage读取
-    initLyricsVisibility() {
-        const isHidden = localStorage.getItem('konghou_lyrics_hidden') === 'true';
-        this.container.style.display = isHidden ? 'none' : 'block';
-        if (this.hideLyricsBtn) {
-            this.hideLyricsBtn.textContent = isHidden ? '显示歌词' : '隐藏歌词';
-        }
-    }
-    
-    bindEvents() {
-        // 隐藏歌词
-        if (this.hideLyricsBtn) {
-            this.hideLyricsBtn.addEventListener('click', () => {
-                this.toggleLyricsVisibility();
-            });
-        }
-    }
-    
-    toggleLyricsVisibility() {
-        const isVisible = this.container.style.display !== 'none';
-        this.container.style.display = isVisible ? 'none' : 'block';
-        this.hideLyricsBtn.textContent = isVisible ? '显示歌词' : '隐藏歌词';
         
-        // 保存状态到localStorage
-        localStorage.setItem('konghou_lyrics_hidden', isVisible);
+        // 确保歌词容器尺寸一致
+        this.ensureConsistentSize();
+    }
+    
+    /**
+     * 确保歌词容器尺寸一致
+     */
+    ensureConsistentSize() {
+        // 不做任何动态尺寸调整，依赖CSS固定尺寸
     }
     
     loadLyrics(lrcUrl) {
@@ -55,6 +33,9 @@ class LyricsManager {
         }
         
         console.log('开始加载歌词:', lrcUrl);
+        
+        // 添加加载状态
+        this.setLoadingState(true);
         
         return fetch(lrcUrl)
             .then(response => {
@@ -67,13 +48,29 @@ class LyricsManager {
                 console.log('歌词加载成功，长度:', lrcText.length);
                 this.parseLRC(lrcText);
                 this.renderLyrics();
+                this.setLoadingState(false);
                 return true;
             })
             .catch(error => {
                 console.error('加载歌词出错:', error);
                 this.clearLyrics();
+                this.setLoadingState(false);
                 return false;
             });
+    }
+    
+    /**
+     * 设置加载状态
+     * @param {boolean} isLoading - 是否正在加载
+     */
+    setLoadingState(isLoading) {
+        if (this.container) {
+            if (isLoading) {
+                this.container.classList.add('loading');
+            } else {
+                this.container.classList.remove('loading');
+            }
+        }
     }
     
     parseLRC(lrcText) {
@@ -129,6 +126,8 @@ class LyricsManager {
     }
     
     renderLyrics() {
+        if (!this.lyricsContent) return;
+        
         if (this.lyrics.length === 0) {
             this.lyricsContent.innerHTML = '<div class="lyrics-line">暂无歌词</div>';
             return;
@@ -136,16 +135,22 @@ class LyricsManager {
         
         let html = '';
         
+        // 添加空白行以确保滚动效果
+        html += '<div class="lyrics-line lyrics-padding"></div>';
+        
         this.lyrics.forEach((lyric, index) => {
             html += `<div class="lyrics-line" data-time="${lyric.time}">${lyric.text}</div>`;
         });
+        
+        // 添加空白行以确保滚动效果
+        html += '<div class="lyrics-line lyrics-padding"></div>';
         
         this.lyricsContent.innerHTML = html;
         console.log('歌词渲染完成');
     }
     
     updateActiveLyric(currentTime) {
-        if (this.lyrics.length === 0) return;
+        if (this.lyrics.length === 0 || !this.lyricsContent) return;
         
         let newIndex = -1;
         
@@ -164,7 +169,7 @@ class LyricsManager {
         this.activeLyricIndex = newIndex;
         
         // 更新普通歌词
-        const lyricsLines = this.lyricsContent.querySelectorAll('.lyrics-line');
+        const lyricsLines = this.lyricsContent.querySelectorAll('.lyrics-line:not(.lyrics-padding)');
         lyricsLines.forEach(line => line.classList.remove('active'));
         
         if (this.activeLyricIndex >= 0 && lyricsLines[this.activeLyricIndex]) {
@@ -183,6 +188,7 @@ class LyricsManager {
         // 计算滚动位置，使活跃歌词居中显示
         const scrollTop = lineTop - (containerHeight / 2) + (lineHeight / 2);
         
+        // 使用平滑滚动
         container.scrollTo({
             top: scrollTop,
             behavior: 'smooth'

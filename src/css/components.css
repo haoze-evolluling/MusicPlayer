@@ -277,10 +277,18 @@
 }
 
 .lyrics-wrapper {
-    height: calc(100% - 50px);
+    height: 100%; /* 调整为100%，因为移除了底部控制按钮 */
     overflow-y: auto;
     mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    
+    /* 隐藏滚动条 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.lyrics-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .lyrics-content {
@@ -301,30 +309,6 @@
     font-size: 1.3rem;
     font-weight: bold;
     opacity: 1;
-}
-
-.lyrics-control {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-    gap: 15px;
-}
-
-.lyrics-control button {
-    padding: 8px 15px;
-    background-color: var(--bg-white);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    transition: all 0.3s;
-    cursor: pointer;
-}
-
-.lyrics-control button:hover {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
 }
 
 /* 控制按钮 */
@@ -793,4 +777,27 @@
         margin-right: 0;
         margin-bottom: 20px;
     }
+}
+
+/* 播放控制区域垂直布局 */
+.player-controls.vertical-layout {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+    gap: 10px;
+}
+
+.player-controls.vertical-layout .progress-container {
+    width: 100%;
+    order: -1;
+}
+
+.player-controls.vertical-layout .control-buttons {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.player-controls.vertical-layout .volume-controls {
+    width: 100%;
+    justify-content: space-between;
 } 

@@ -4,4 +4,7 @@
 @import 'base.css';
 
 /* 导入组件样式 */
-@import 'components.css'; 
+@import 'components.css';
+
+/* 导入自定义样式 */
+@import 'custom.css'; 
