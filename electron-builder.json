@@ -7,14 +7,19 @@
   },
   "files": [
     "index.js",
+    "preload.js",
     "src/**/*",
     "node_modules/**/*"
   ],
   "win": {
     "target": [
-      "nsis"
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
     ],
-    "icon": "src/assets/logo.png"
+    "icon": "icon.ico",
+    "artifactName": "${productName}-Setup-${version}.${ext}"
   },
   "mac": {
     "target": [
@@ -35,7 +40,11 @@
     "allowToChangeInstallationDirectory": true,
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "shortcutName": "箜篌音乐播放器"
+    "shortcutName": "箜篌音乐播放器",
+    "installerIcon": "icon.ico",
+    "uninstallerIcon": "icon.ico",
+    "perMachine": true,
+    "artifactName": "${productName}-Setup-${version}-${arch}.${ext}"
   },
   "dmg": {
     "contents": [
