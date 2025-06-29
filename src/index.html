@@ -13,6 +13,11 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- 侧边栏折叠按钮 -->
+        <button id="sidebar-toggle" class="sidebar-toggle-btn">
+            <span class="toggle-icon">◀</span>
+        </button>
+        
         <!-- 左侧区域：音乐列表 -->
         <div class="sidebar">
             <div class="app-header">
@@ -22,26 +27,20 @@
                 </div>
                 <div class="nav-tabs">
                     <button class="tab-btn active" data-tab="now-playing">正在播放</button>
-                    <button class="tab-btn" data-tab="playlists">播放列表</button>
-                    <button class="tab-btn" data-tab="search">歌曲搜索</button>
+                    <button class="tab-btn" data-tab="search">音乐库</button>
                 </div>
             </div>
             
-            <!-- 三个内容区 -->
+            <!-- 内容区 -->
             <div class="tab-content active" id="now-playing">
                 <h2>当前播放列表</h2>
                 <ul class="current-playlist"></ul>
             </div>
             
-            <div class="tab-content" id="playlists">
-                <h2>我的歌单</h2>
-                <div class="playlist-grid"></div>
-            </div>
-            
             <div class="tab-content" id="search">
                 <div class="search-box">
-                    <input type="text" id="search-input" placeholder="搜索歌曲、歌手或专辑...">
-                    <button id="search-btn">搜索</button>
+                    <input type="text" id="search-input" placeholder="输入路径(留空显示根目录)...">
+                    <button id="search-btn">加载</button>
                     <div class="source-selector">
                         <label>
                             <input type="radio" name="source" value="github" checked> GitHub
@@ -59,12 +58,14 @@
         <!-- 右侧区域：播放器主区域 -->
         <div class="main-player">
             <div class="player-content">
-                <div class="album-cover">
-                    <img src="./assets/default-cover.png" alt="封面" id="current-cover">
-                </div>
-                <div class="song-info">
-                    <h2 id="current-title">未播放</h2>
-                    <p id="current-artist">未知歌手</p>
+                <div class="music-info-container">
+                    <div class="album-cover">
+                        <img src="./assets/default-cover.png" alt="封面" id="current-cover">
+                    </div>
+                    <div class="song-info">
+                        <h2 id="current-title">未播放</h2>
+                        <p id="current-artist">未知歌手</p>
+                    </div>
                 </div>
                 
                 <!-- 歌词区域 -->
@@ -160,6 +161,8 @@
     </div>
     
     <script src="./js/config.js"></script>
+    <script src="./js/github-api.js"></script>
+    <script src="./js/gitee-api.js"></script>
     <script src="./js/background.js"></script>
     <script src="./js/player.js"></script>
     <script src="./js/lyrics.js"></script>

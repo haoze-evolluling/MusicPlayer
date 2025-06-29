@@ -4,21 +4,38 @@
 
 class UIManager {
     constructor() {
-        this.tabBtns = document.querySelectorAll('.tab-btn');
+        // 侧边栏相关元素
+        this.sidebar = document.querySelector('.sidebar');
+        this.sidebarToggleBtn = document.getElementById('sidebar-toggle');
+        this.mainPlayer = document.querySelector('.main-player');
+        
+        // 标签页切换相关元素
+        this.tabButtons = document.querySelectorAll('.tab-btn');
         this.tabContents = document.querySelectorAll('.tab-content');
+        
+        // 设置面板相关元素
         this.settingsBtn = document.getElementById('settings-btn');
         this.settingsPanel = document.getElementById('settings-panel');
         this.closeSettingsBtn = document.getElementById('close-settings');
         
-        this.bindEvents();
+        // 初始化UI事件
+        this.initEvents();
+        
+        // 从localStorage读取侧边栏状态
+        this.loadSidebarState();
     }
     
-    bindEvents() {
+    initEvents() {
+        // 侧边栏折叠/展开
+        this.sidebarToggleBtn.addEventListener('click', () => {
+            this.toggleSidebar();
+        });
+        
         // 标签页切换
-        this.tabBtns.forEach(btn => {
+        this.tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
-                const tabName = btn.dataset.tab;
-                this.switchTab(tabName);
+                const tabId = btn.getAttribute('data-tab');
+                this.switchTab(tabId);
             });
         });
         
@@ -43,6 +60,29 @@ class UIManager {
             e.stopPropagation();
         });
         
+        // 背景设置选项
+        document.querySelectorAll('.bg-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const bgType = btn.dataset.bg;
+                localStorage.setItem(CONFIG.storage.background, bgType);
+                
+                // 更新按钮状态
+                document.querySelectorAll('.bg-option').forEach(b => {
+                    b.classList.toggle('active', b === btn);
+                });
+                
+                // 更新背景
+                if (backgroundManager) {
+                    backgroundManager.setBackgroundType(bgType);
+                }
+                
+                // 如果是自定义背景，触发文件选择
+                if (bgType === 'custom') {
+                    document.getElementById('custom-bg').click();
+                }
+            });
+        });
+        
         // 为所有按钮添加点击缩放效果
         document.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('mousedown', () => {
@@ -59,18 +99,50 @@ class UIManager {
         });
     }
     
-    switchTab(tabName) {
-        // 更新标签按钮状态
-        this.tabBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.tab === tabName);
+    /**
+     * 切换侧边栏折叠状态
+     */
+    toggleSidebar() {
+        this.sidebar.classList.toggle('collapsed');
+        // 保存状态到localStorage
+        localStorage.setItem('sidebar_collapsed', this.sidebar.classList.contains('collapsed'));
+    }
+    
+    /**
+     * 从localStorage加载侧边栏状态
+     */
+    loadSidebarState() {
+        const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+        if (isCollapsed) {
+            this.sidebar.classList.add('collapsed');
+        }
+    }
+    
+    /**
+     * 切换标签页
+     * @param {string} tabId - 标签页ID
+     */
+    switchTab(tabId) {
+        // 移除所有标签按钮的active类
+        this.tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-tab') === tabId) {
+                btn.classList.add('active');
+            }
         });
         
-        // 更新标签内容显示
+        // 隐藏所有标签内容，显示选中的标签内容
         this.tabContents.forEach(content => {
-            content.classList.toggle('active', content.id === tabName);
+            content.classList.remove('active');
+            if (content.id === tabId) {
+                content.classList.add('active');
+            }
         });
     }
     
+    /**
+     * 切换设置面板显示状态
+     */
     toggleSettings() {
         const isVisible = this.settingsPanel.style.display === 'flex';
         
@@ -83,6 +155,9 @@ class UIManager {
         }
     }
     
+    /**
+     * 更新设置面板UI
+     */
     updateSettingsUI() {
         // 更新背景设置按钮状态
         const currentBgType = localStorage.getItem(CONFIG.storage.background) || CONFIG.background.defaultType;
@@ -172,5 +247,5 @@ class UIManager {
     }
 }
 
-// 全局UI管理器实例
+// 创建UI管理器实例
 const uiManager = new UIManager(); 

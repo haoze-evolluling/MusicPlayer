@@ -1,20 +1,34 @@
-/* 主样式 */
+/* 主样式 - 全新设计 */
 :root {
-    --primary-color: #1e90ff;
-    --primary-light: #87cefa;
-    --secondary-color: #00bfff;
-    --text-color: #ffffff;
-    --text-secondary: #f0f8ff;
-    --bg-color: #f0f8ff;
-    --bg-light: #e6f2ff;
-    --sidebar-width: 320px;
+    --primary-color: #1e88e5; /* 蓝色主色调 */
+    --primary-light: #6ab7ff;
+    --primary-dark: #005cb2;
+    --secondary-color: #42a5f5;
+    --text-primary: #212121; /* 主文本颜色 */
+    --text-secondary: #757575; /* 次要文本颜色 */
+    --bg-white: #ffffff; /* 白色背景 */
+    --bg-light: #f5f5f5; /* 浅灰背景 */
+    --bg-sidebar: #f0f7ff; /* 侧边栏背景 */
+    --border-color: #e0e0e0;
+    --sidebar-width: 380px; /* 加宽侧边栏 */
+    --sidebar-collapsed: 60px; /* 收起时的宽度 */
     --controls-height: 90px;
+    --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: var(--bg-white);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
     line-height: 1.5;
+    overflow: hidden;
 }
 
 /* 应用容器 */
@@ -24,9 +38,10 @@ body {
     height: 100vh;
     width: 100vw;
     position: relative;
+    background-color: var(--bg-white);
 }
 
-/* 背景模糊 */
+/* 背景 */
 .bg-overlay {
     position: fixed;
     width: 100%;
@@ -35,8 +50,7 @@ body {
     left: 0;
     background-size: cover;
     background-position: center;
-    filter: blur(30px);
-    opacity: 0.5;
+    opacity: 0.1; /* 减少不透明度 */
     transition: background-image 0.5s ease;
     z-index: -1;
 }
@@ -47,19 +61,64 @@ body {
     height: calc(100vh - var(--controls-height));
 }
 
+/* 侧边栏折叠按钮 */
+.sidebar-toggle-btn {
+    position: absolute;
+    left: var(--sidebar-width);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 60px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: left 0.3s ease;
+}
+
+.sidebar-toggle-btn .toggle-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed + .sidebar-toggle-btn {
+    left: var(--sidebar-collapsed);
+}
+
+.sidebar.collapsed + .sidebar-toggle-btn .toggle-icon {
+    transform: rotate(180deg);
+}
+
 /* 左侧边栏 */
 .sidebar {
     width: var(--sidebar-width);
     height: calc(100vh - var(--controls-height));
-    background-color: rgba(30, 144, 255, 0.2);
-    backdrop-filter: blur(10px);
+    background-color: var(--bg-sidebar);
     overflow-y: auto;
-    border-right: 1px solid rgba(135, 206, 250, 0.3);
+    border-right: 1px solid var(--border-color);
+    transition: width 0.3s ease;
+    box-shadow: var(--shadow-light);
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed);
+}
+
+.sidebar.collapsed .app-header .logo h1,
+.sidebar.collapsed .nav-tabs,
+.sidebar.collapsed .tab-content {
+    display: none;
 }
 
 .app-header {
     padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-white);
 }
 
 .logo {
@@ -77,26 +136,33 @@ body {
 .logo h1 {
     font-size: 1.5rem;
     font-weight: bold;
+    color: var(--primary-color);
 }
 
 .nav-tabs {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .tab-btn {
-    padding: 8px 0;
+    padding: 12px 0;
     flex: 1;
     color: var(--text-secondary);
     text-align: center;
-    border-bottom: 2px solid transparent;
+    border-bottom: 3px solid transparent;
     transition: all 0.3s;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 .tab-btn.active, .tab-btn:hover {
     color: var(--primary-color);
-    border-bottom: 2px solid var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+    font-weight: 600;
 }
 
 /* 标签内容 */
@@ -109,159 +175,168 @@ body {
     display: block;
 }
 
-/* 播放列表 */
+/* 当前播放列表 */
 .current-playlist {
     margin-top: 10px;
 }
 
 .current-playlist li {
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 5px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 8px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    color: var(--text-primary);
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-light);
 }
 
 .current-playlist li:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--primary-light);
+    color: white;
+    transform: translateY(-2px);
 }
 
 .current-playlist li.active {
-    background-color: rgba(30, 144, 255, 0.3);
-}
-
-.playlist-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.playlist-item {
-    background-color: rgba(135, 206, 250, 0.2);
-    border-radius: 5px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-.playlist-item:hover {
-    transform: scale(1.05);
-}
-
-.playlist-cover {
-    height: 120px;
-    overflow: hidden;
-}
-
-.playlist-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.playlist-name {
-    padding: 10px;
-    text-align: center;
-    font-size: 0.9rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    box-shadow: var(--shadow-medium);
 }
 
 /* 搜索区域 */
 .search-box {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 #search-input {
     width: 100%;
-    padding: 10px;
-    background-color: rgba(135, 206, 250, 0.2);
-    border-radius: 5px;
-    color: #1e3a8a;
-    margin-bottom: 10px;
+    padding: 12px 15px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    font-size: 1rem;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s;
+}
+
+#search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+    outline: none;
 }
 
 #search-btn {
     background-color: var(--primary-color);
     color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s;
+    font-weight: 500;
+    cursor: pointer;
 }
 
 #search-btn:hover {
-    background-color: var(--primary-light);
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
 }
 
 .source-selector {
-    margin-top: 10px;
+    margin-top: 15px;
     display: flex;
-    gap: 15px;
+    gap: 20px;
     align-items: center;
+}
+
+.source-selector label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
 }
 
 .repo-settings-btn {
     background-color: var(--secondary-color);
     color: white;
-    padding: 5px 10px;
-    border-radius: 3px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
     margin-left: auto;
-    font-size: 0.8rem;
-    transition: background-color 0.3s;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    cursor: pointer;
 }
 
 .repo-settings-btn:hover {
     background-color: var(--primary-color);
+    transform: translateY(-2px);
 }
 
-/* 仓库设置对话框 */
-.repo-settings {
-    padding: 20px;
-}
-
-.setting-group {
-    margin-bottom: 15px;
-}
-
-.setting-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.setting-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-}
-
-.setting-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+/* 文件浏览器样式 */
+.file-explorer {
     margin-top: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-light);
 }
 
-.setting-actions button {
-    padding: 8px 15px;
-    border-radius: 3px;
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.file-item:last-child {
+    border-bottom: none;
+}
+
+.file-item:hover {
+    background-color: var(--bg-light);
+}
+
+.file-icon {
+    margin-right: 12px;
+    font-size: 1.2em;
+}
+
+.file-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.file-desc, .file-artist {
+    margin-left: 12px;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+}
+
+.file-item .play-btn {
+    margin-left: 12px;
+    padding: 6px 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9em;
+    transition: all 0.3s;
     cursor: pointer;
 }
 
-#save-repos {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-#reset-repos {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-.search-results {
-    margin-top: 15px;
+.file-item .play-btn:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.05);
 }
 
 /* 右侧主播放区 */
@@ -270,29 +345,48 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
+    justify-content: flex-start;
+    padding: 30px;
     height: calc(100vh - var(--controls-height));
     overflow-y: auto;
+    background-color: var(--bg-white);
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed + .main-player {
+    margin-left: calc(var(--sidebar-collapsed) - var(--sidebar-width));
 }
 
 .player-content {
     width: 100%;
-    max-width: 500px;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.album-cover {
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+/* 音乐信息容器 */
+.music-info-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
     margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--bg-light);
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+}
+
+.album-cover {
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    margin-right: 30px;
     animation: rotate 20s linear infinite;
     animation-play-state: paused;
+    flex-shrink: 0;
 }
 
 .album-cover.playing {
@@ -306,18 +400,21 @@ body {
 }
 
 .song-info {
-    text-align: center;
-    margin-bottom: 20px;
+    flex: 1;
+    padding: 15px;
 }
 
 #current-title {
-    font-size: 1.5rem;
-    margin-bottom: 5px;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--primary-dark);
+    font-weight: 700;
 }
 
 #current-artist {
     color: var(--text-secondary);
-    font-size: 1rem;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
 }
 
 /* 歌词区域 */
@@ -327,10 +424,14 @@ body {
     overflow: hidden;
     margin-top: 20px;
     position: relative;
+    background-color: var(--bg-light);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-light);
 }
 
 .lyrics-wrapper {
-    height: calc(100% - 40px);
+    height: calc(100% - 50px);
     overflow-y: auto;
     mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
@@ -345,13 +446,13 @@ body {
     margin: 15px 0;
     color: var(--text-secondary);
     transition: all 0.3s;
-    font-size: 1rem;
-    opacity: 0.6;
+    font-size: 1.1rem;
+    opacity: 0.7;
 }
 
 .lyrics-line.active {
     color: var(--primary-color);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: bold;
     opacity: 1;
 }
@@ -359,81 +460,95 @@ body {
 .lyrics-control {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
-    gap: 10px;
+    margin-top: 15px;
+    gap: 15px;
 }
 
 .lyrics-control button {
-    padding: 5px 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    font-size: 0.8rem;
+    padding: 8px 15px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    cursor: pointer;
 }
 
 .lyrics-control button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: var(--text-color);
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
 }
 
 /* 底部控制栏 */
 .player-controls {
     height: var(--controls-height);
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
+    background-color: var(--primary-dark);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 30px;
+    color: white;
 }
 
 .control-buttons {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .ctrl-btn {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: none;
+    border: none;
     transition: all 0.3s;
+    cursor: pointer;
 }
 
 .ctrl-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
 }
 
 .ctrl-btn img {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
+    filter: brightness(0) invert(1);
 }
 
 #play-btn {
-    background-color: var(--primary-color);
+    background-color: white;
+    width: 55px;
+    height: 55px;
 }
 
 #play-btn:hover {
     background-color: var(--primary-light);
 }
 
+#play-btn img {
+    filter: none;
+}
+
 .progress-container {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 20px;
+    gap: 15px;
+    padding: 0 30px;
 }
 
 .progress-bar {
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
     flex: 1;
     cursor: pointer;
     position: relative;
@@ -441,8 +556,8 @@ body {
 
 .progress {
     height: 100%;
-    background-color: var(--primary-color);
-    border-radius: 5px;
+    background-color: white;
+    border-radius: 3px;
     width: 0;
     position: absolute;
     transition: width 0.1s;
@@ -451,62 +566,67 @@ body {
 .volume-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 .volume-bar {
-    width: 80px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    width: 100px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
     position: relative;
     cursor: pointer;
 }
 
 .volume-level {
     height: 100%;
-    background-color: var(--secondary-color);
-    border-radius: 5px;
+    background-color: white;
+    border-radius: 3px;
     width: 100%;
     position: absolute;
 }
 
 .playback-speed {
-    margin-left: 15px;
+    margin-left: 20px;
 }
 
 #speed-select {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-color);
-    padding: 5px;
-    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 /* 浮动按钮 */
 .floating-btn {
     position: fixed;
-    bottom: 100px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
+    bottom: 110px;
+    right: 30px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     background-color: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-medium);
     z-index: 10;
     transition: transform 0.3s, background-color 0.3s;
+    border: none;
+    cursor: pointer;
 }
 
 .floating-btn:hover {
     transform: scale(1.1);
-    background-color: var(--primary-light);
+    background-color: var(--primary-dark);
 }
 
 .floating-btn img {
     width: 24px;
     height: 24px;
+    filter: brightness(0) invert(1);
 }
 
 /* 全屏歌词 */
@@ -516,8 +636,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.9);
     z-index: 100;
     display: none;
     flex-direction: column;
@@ -536,26 +655,30 @@ body {
 }
 
 .fullscreen-lyrics-content .lyrics-line {
-    font-size: 1.5rem;
-    margin: 25px 0;
+    font-size: 1.8rem;
+    margin: 30px 0;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .fullscreen-lyrics-content .lyrics-line.active {
-    font-size: 2rem;
+    font-size: 2.2rem;
+    color: white;
 }
 
 #exit-fullscreen {
     position: absolute;
-    bottom: 30px;
-    padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    color: var(--text-color);
+    bottom: 40px;
+    padding: 12px 25px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    color: white;
     transition: background-color 0.3s;
+    cursor: pointer;
 }
 
 #exit-fullscreen:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* 设置面板 */
@@ -566,7 +689,6 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
     z-index: 100;
     display: none;
     align-items: center;
@@ -574,44 +696,65 @@ body {
 }
 
 .settings-content {
-    background-color: var(--bg-light);
-    border-radius: 10px;
+    background-color: var(--bg-white);
+    border-radius: 12px;
     width: 90%;
     max-width: 500px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    box-shadow: var(--shadow-medium);
 }
 
 .settings-content h2 {
     margin-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    color: var(--primary-dark);
 }
 
 .settings-section {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .settings-section h3 {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     color: var(--text-secondary);
+    font-weight: 600;
 }
 
 .background-options {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     flex-wrap: wrap;
 }
 
 .bg-option {
-    padding: 8px 15px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    padding: 10px 20px;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    transition: all 0.3s;
+    cursor: pointer;
 }
 
 .bg-option:hover, .bg-option.active {
     background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+#close-settings {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#close-settings:hover {
+    background-color: var(--primary-dark);
 }
 
 /* 模态对话框 */
@@ -629,24 +772,27 @@ body {
 }
 
 .modal-content {
-    background-color: white;
-    border-radius: 8px;
+    background-color: var(--bg-white);
+    border-radius: 12px;
     width: 90%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    box-shadow: var(--shadow-medium);
+    overflow: hidden;
 }
 
 .modal-header {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .modal-header h3 {
     margin: 0;
-    color: #333;
+    font-weight: 600;
 }
 
 .modal-close {
@@ -654,54 +800,125 @@ body {
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: #999;
+    color: white;
 }
 
 .modal-body {
-    padding: 15px;
+    padding: 20px;
 }
 
 .modal-footer {
-    padding: 15px;
-    border-top: 1px solid #eee;
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 15px;
+    background-color: var(--bg-light);
 }
 
 .btn-primary {
     background-color: var(--primary-color);
     color: white;
-    padding: 8px 15px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
 }
 
 .btn-secondary {
-    background-color: #f0f0f0;
-    color: #333;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
+    background-color: var(--bg-white);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
     cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-light);
+}
+
+/* 仓库设置对话框 */
+.repo-settings {
+    padding: 10px 0;
+}
+
+.setting-group {
+    margin-bottom: 20px;
+}
+
+.setting-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.setting-group input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.setting-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+    outline: none;
 }
 
 /* 提示框 */
 .toast {
     position: fixed;
-    bottom: 20px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: var(--primary-dark);
     color: white;
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 12px 25px;
+    border-radius: 8px;
     z-index: 1100;
     opacity: 1;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s, transform 0.3s;
+    box-shadow: var(--shadow-medium);
 }
 
 .toast.hide {
     opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+}
+
+/* 动画 */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 320px;
+    }
+    
+    .music-info-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .album-cover {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
 } 

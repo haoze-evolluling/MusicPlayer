@@ -27,8 +27,6 @@ const CONFIG = {
     // 背景设置
     background: {
         defaultType: 'default', // 默认背景: 'default', 'cover', 'custom'
-        blurLevel: 30, // 背景模糊程度
-        particlesOptions: {} // 保留空对象以防止错误
     },
     
     // 存储相关键名
