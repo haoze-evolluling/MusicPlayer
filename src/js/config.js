@@ -10,10 +10,8 @@ const CONFIG = {
             repo: 'haoze-evolluling/MusicStorage', // 默认GitHub音乐仓库
             defaultRepo: 'haoze-evolluling/MusicStorage' // 默认GitHub音乐仓库（用于重置）
         },
-        gitee: {
-            baseUrl: 'https://gitee.com/api/v5',
-            repo: 'your-username/music-repo', // 默认Gitee音乐仓库
-            defaultRepo: 'your-username/music-repo' // 默认Gitee音乐仓库（用于重置）
+        local: {
+            supportedFormats: ['.mp3', '.wav', '.ogg', '.flac'] // 支持的音频格式
         }
     },
     
@@ -39,6 +37,6 @@ const CONFIG = {
         playHistory: 'konghou_history',
         lastPlaylist: 'konghou_last_playlist',
         githubRepo: 'konghou_github_repo',
-        giteeRepo: 'konghou_gitee_repo'
+        lastLocalFolder: 'konghou_local_folder'
     }
 }; 

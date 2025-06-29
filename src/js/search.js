@@ -8,6 +8,8 @@ class MusicRepository {
         this.searchBtn = document.getElementById('search-btn');
         this.searchResults = document.querySelector('.search-results');
         this.sourceRadios = document.querySelectorAll('input[name="source"]');
+        this.setRepoBtn = document.getElementById('set-repo-btn');
+        this.selectFolderBtn = document.getElementById('select-folder-btn');
         
         this.currentSource = 'github'; // 默认为GitHub
         this.isLoading = false;
@@ -22,14 +24,9 @@ class MusicRepository {
     loadCustomRepoSettings() {
         // 从本地存储加载自定义仓库设置
         const customGithubRepo = localStorage.getItem(CONFIG.storage.githubRepo);
-        const customGiteeRepo = localStorage.getItem(CONFIG.storage.giteeRepo);
         
         if (customGithubRepo) {
             CONFIG.api.github.repo = customGithubRepo;
-        }
-        
-        if (customGiteeRepo) {
-            CONFIG.api.gitee.repo = customGiteeRepo;
         }
     }
     
@@ -54,17 +51,51 @@ class MusicRepository {
             radio.addEventListener('change', () => {
                 this.currentSource = radio.value;
                 this.currentPath = ''; // 重置路径
+                
+                // 根据选择的源显示对应的按钮
+                if (this.currentSource === 'github') {
+                    this.setRepoBtn.style.display = 'block';
+                    this.selectFolderBtn.style.display = 'none';
+                } else if (this.currentSource === 'local') {
+                    this.setRepoBtn.style.display = 'none';
+                    this.selectFolderBtn.style.display = 'block';
+                }
+                
                 this.loadRepositoryFiles(); // 切换后自动加载
             });
         });
         
         // 设置仓库按钮
-        document.getElementById('set-repo-btn').addEventListener('click', () => {
+        this.setRepoBtn.addEventListener('click', () => {
             this.showRepoSettingsDialog();
+        });
+        
+        // 选择文件夹按钮
+        this.selectFolderBtn.addEventListener('click', () => {
+            this.selectLocalFolder();
         });
 
         // 加载初始文件列表
         setTimeout(() => this.loadRepositoryFiles(), 500);
+    }
+    
+    async selectLocalFolder() {
+        try {
+            console.log('开始选择本地音乐文件夹...');
+            const success = await localMusicApi.selectMusicFolder();
+            
+            console.log('文件夹选择结果:', success);
+            
+            if (success) {
+                this.showToast('文件夹选择成功');
+                this.loadRepositoryFiles();
+            } else {
+                this.showToast('文件夹选择取消');
+            }
+        } catch (error) {
+            console.error('选择文件夹出错:', error);
+            this.showToast('文件夹选择失败');
+        }
     }
     
     showRepoSettingsDialog() {
@@ -84,10 +115,6 @@ class MusicRepository {
                         <div class="setting-group">
                             <label>GitHub 仓库:</label>
                             <input type="text" id="github-repo-input" placeholder="用户名/仓库名" value="${CONFIG.api.github.repo}">
-                        </div>
-                        <div class="setting-group">
-                            <label>Gitee 仓库:</label>
-                            <input type="text" id="gitee-repo-input" placeholder="用户名/仓库名" value="${CONFIG.api.gitee.repo}">
                         </div>
                     </div>
                 </div>
@@ -109,16 +136,10 @@ class MusicRepository {
         // 保存设置
         modal.querySelector('#save-repos').addEventListener('click', () => {
             const githubRepo = modal.querySelector('#github-repo-input').value.trim();
-            const giteeRepo = modal.querySelector('#gitee-repo-input').value.trim();
             
             if (githubRepo) {
                 CONFIG.api.github.repo = githubRepo;
                 localStorage.setItem(CONFIG.storage.githubRepo, githubRepo);
-            }
-            
-            if (giteeRepo) {
-                CONFIG.api.gitee.repo = giteeRepo;
-                localStorage.setItem(CONFIG.storage.giteeRepo, giteeRepo);
             }
             
             // 显示保存成功提示
@@ -134,13 +155,10 @@ class MusicRepository {
         // 重置为默认
         modal.querySelector('#reset-repos').addEventListener('click', () => {
             CONFIG.api.github.repo = CONFIG.api.github.defaultRepo;
-            CONFIG.api.gitee.repo = CONFIG.api.gitee.defaultRepo;
             
             localStorage.removeItem(CONFIG.storage.githubRepo);
-            localStorage.removeItem(CONFIG.storage.giteeRepo);
             
             modal.querySelector('#github-repo-input').value = CONFIG.api.github.defaultRepo;
-            modal.querySelector('#gitee-repo-input').value = CONFIG.api.gitee.defaultRepo;
             
             this.showToast('已恢复默认仓库设置');
         });
@@ -175,8 +193,8 @@ class MusicRepository {
         
         if (this.currentSource === 'github') {
             this.loadGithubFiles(path);
-        } else {
-            this.loadGiteeFiles(path);
+        } else if (this.currentSource === 'local') {
+            this.loadLocalFiles(path);
         }
     }
     
@@ -205,29 +223,27 @@ class MusicRepository {
             });
     }
     
-    loadGiteeFiles(path) {
-        // 构建Gitee API URL
-        const apiUrl = `${CONFIG.api.gitee.baseUrl}/repos/${CONFIG.api.gitee.repo}/contents/${path}`;
-        
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Gitee API请求失败');
+    async loadLocalFiles(path) {
+        try {
+            // 检查是否已选择文件夹
+            if (!localMusicApi.hasMusicFolderSelected()) {
+                await this.selectLocalFolder();
+                if (!localMusicApi.hasMusicFolderSelected()) {
+                    throw new Error('未选择音乐文件夹');
                 }
-                return response.json();
-            })
-            .then(data => {
-                this.renderFileList(data, 'gitee');
-            })
-            .catch(error => {
-                console.error('Gitee文件加载出错:', error);
-                this.searchResults.innerHTML = `<div class="error">加载出错: ${error.message}</div>`;
-            })
-            .finally(() => {
-                this.isLoading = false;
-                this.searchBtn.disabled = false;
-                this.searchBtn.textContent = '加载';
-            });
+            }
+            
+            // 获取本地文件列表
+            const files = await localMusicApi.getContents(path);
+            this.renderFileList(files, 'local');
+        } catch (error) {
+            console.error('本地文件加载出错:', error);
+            this.searchResults.innerHTML = `<div class="error">加载出错: ${error.message}</div>`;
+        } finally {
+            this.isLoading = false;
+            this.searchBtn.disabled = false;
+            this.searchBtn.textContent = '加载';
+        }
     }
     
     renderFileList(files, source) {
@@ -247,113 +263,109 @@ class MusicRepository {
         }
         
         // 文件排序：先目录后文件
-        files.sort((a, b) => {
-            // 目录排在前面
-            if (a.type === 'dir' && b.type !== 'dir') return -1;
-            if (a.type !== 'dir' && b.type === 'dir') return 1;
-            // 同类型按名称排序
-            return a.name.localeCompare(b.name);
-        });
+        if (source !== 'local') { // 本地文件已经排序
+            files.sort((a, b) => {
+                if (a.type !== b.type) {
+                    return a.type === 'dir' ? -1 : 1;
+                }
+                return a.name.localeCompare(b.name);
+            });
+        }
         
-        // 生成文件列表
+        // 遍历显示所有文件和文件夹
         files.forEach(file => {
-            // 目录
-            if (file.type === 'dir') {
-                html += `<div class="file-item directory" data-path="${file.path}">
-                    <span class="file-icon">📁</span>
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-desc">目录</span>
-                </div>`;
-            }
-            // 音频文件
-            else if (file.name.endsWith('.mp3')) {
-                const fileName = file.name.replace('.mp3', '');
-                let title = fileName;
-                let artist = 'Unknown';
-                
-                if (fileName.includes('-')) {
-                    const parts = fileName.split('-');
-                    title = parts[0].trim();
-                    artist = parts.slice(1).join('-').trim();
+            let fileIcon, isPlayable;
+            
+            // 根据文件类型设置不同图标
+            if (file.type === 'dir' || file.type === 'directory') {
+                fileIcon = '📁'; // 文件夹图标
+                isPlayable = false;
+            } else {
+                // 检查是否为音频文件
+                if (source === 'local') {
+                    isPlayable = localMusicApi.isSupportedAudio(file.name);
+                } else {
+                    isPlayable = file.name.toLowerCase().endsWith('.mp3');
                 }
                 
-                html += `<div class="file-item audio" data-path="${file.path}" data-download="${file.download_url || ''}">
-                    <span class="file-icon">🎵</span>
-                    <span class="file-name">${title}</span>
-                    <span class="file-artist">${artist}</span>
-                    <button class="play-btn">播放</button>
-                </div>`;
+                fileIcon = isPlayable ? '🎵' : '📄';
             }
-            // 歌词文件
-            else if (file.name.endsWith('.lrc')) {
-                html += `<div class="file-item lyrics" data-path="${file.path}">
-                    <span class="file-icon">📝</span>
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-desc">歌词</span>
-                </div>`;
+            
+            // 如果是GitHub或本地音乐，处理路径
+            let filePath = '';
+            if (source === 'github') {
+                filePath = file.path;
+            } else if (source === 'local') {
+                filePath = file.path;
             }
-            // 图像文件（封面）
-            else if (file.name.endsWith('.jpg') || file.name.endsWith('.png')) {
-                html += `<div class="file-item image" data-path="${file.path}">
-                    <span class="file-icon">🖼️</span>
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-desc">图片</span>
-                </div>`;
+            
+            // 构建文件列表项
+            html += `<div class="file-item ${file.type === 'dir' || file.type === 'directory' ? 'directory' : 'file'}" 
+                      data-path="${filePath}" 
+                      data-type="${file.type === 'dir' || file.type === 'directory' ? 'dir' : 'file'}" 
+                      data-source="${source}">
+                <span class="file-icon">${fileIcon}</span>
+                <span class="file-name">${file.name}</span>`;
+            
+            // 如果是音频文件，添加播放按钮
+            if (isPlayable) {
+                html += `<button class="play-btn" data-path="${filePath}" data-source="${source}">播放</button>`;
             }
-            // 其他文件
-            else {
-                html += `<div class="file-item other" data-path="${file.path}">
-                    <span class="file-icon">📄</span>
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-desc">${this.getFileSize(file.size)}</span>
-                </div>`;
-            }
+            
+            html += '</div>';
         });
         
         html += '</div>';
+        
+        // 更新结果区域
         this.searchResults.innerHTML = html;
         
-        // 为目录绑定点击事件
-        document.querySelectorAll('.file-item.directory').forEach(item => {
+        // 绑定目录点击事件
+        this.searchResults.querySelectorAll('.file-item.directory').forEach(item => {
             item.addEventListener('click', () => {
                 const path = item.getAttribute('data-path');
-                this.currentPath = path;
                 this.searchInput.value = path;
                 this.loadRepositoryFiles();
             });
         });
         
-        // 为音频文件绑定播放事件
-        document.querySelectorAll('.file-item.audio .play-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
+        // 绑定播放按钮点击事件
+        this.searchResults.querySelectorAll('.play-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation(); // 阻止冒泡，避免触发目录点击
+                
+                const path = btn.getAttribute('data-path');
+                const source = btn.getAttribute('data-source');
                 const fileItem = btn.closest('.file-item');
-                const path = fileItem.getAttribute('data-path');
-                const downloadUrl = fileItem.getAttribute('data-download') || this.getDownloadUrl(path, source);
-                const fileName = path.split('/').pop().replace('.mp3', '');
+                const fileName = fileItem.querySelector('.file-name').textContent;
                 
-                // 尝试解析歌手和标题
-                let title = fileName;
-                let artist = 'Unknown';
-                
-                if (fileName.includes('-')) {
-                    const parts = fileName.split('-');
-                    title = parts[0].trim();
-                    artist = parts.slice(1).join('-').trim();
-                }
-                
-                // 创建音轨
-                const track = {
-                    title,
-                    artist,
-                    url: downloadUrl,
-                    cover: this.getDownloadUrl(path.replace('.mp3', '.jpg'), source),
-                    lrc: this.getDownloadUrl(path.replace('.mp3', '.lrc'), source)
-                };
-                
-                // 播放该音轨
-                if (musicPlayer) {
-                    musicPlayer.setPlaylist([track], 0);
+                try {
+                    this.showToast(`正在加载: ${fileName}`);
+                    
+                    // 根据不同来源处理音频
+                    if (source === 'github') {
+                        // 从文件创建音轨对象
+                        const file = {
+                            name: fileName,
+                            path: path,
+                            download_url: this.getDownloadUrl(path, 'github')
+                        };
+                        
+                        const track = githubApi.fileToTrack(file);
+                        window.player.setPlaylist([track], 0);
+                    } else if (source === 'local') {
+                        // 从文件列表中找到对应的文件对象
+                        const files = await localMusicApi.getContents(this.currentPath);
+                        const fileObj = files.find(f => f.path === path);
+                        
+                        if (fileObj) {
+                            const track = await localMusicApi.fileToTrack(fileObj);
+                            window.player.setPlaylist([track], 0);
+                        }
+                    }
+                } catch (error) {
+                    console.error('播放文件出错:', error);
+                    this.showToast(`播放出错: ${error.message}`);
                 }
             });
         });
@@ -361,27 +373,26 @@ class MusicRepository {
     
     getParentPath(path) {
         if (!path) return '';
-        const parts = path.split('/');
-        parts.pop(); // 移除最后一部分
+        let parts = path.split('/');
+        parts.pop(); // 移除最后一个部分
         return parts.join('/');
     }
     
     getFileSize(bytes) {
         if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / 1048576).toFixed(1) + ' MB';
     }
     
     getDownloadUrl(path, source) {
         if (source === 'github') {
-            // GitHub的原始内容链接
             return `https://raw.githubusercontent.com/${CONFIG.api.github.repo}/master/${path}`;
-        } else {
-            // Gitee的原始内容链接
-            return `https://gitee.com/${CONFIG.api.gitee.repo}/raw/master/${path}`;
+        } else if (source === 'local') {
+            return path; // 本地文件使用File API处理
         }
+        return '';
     }
 }
 
-// 全局仓库实例
+// 初始化音乐仓库
 const musicRepository = new MusicRepository(); 

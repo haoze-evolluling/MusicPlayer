@@ -59,9 +59,10 @@
                             <input type="radio" name="source" value="github" checked> GitHub
                         </label>
                         <label>
-                            <input type="radio" name="source" value="gitee"> Gitee
+                            <input type="radio" name="source" value="local"> 本地音乐
                         </label>
                         <button id="set-repo-btn" class="repo-settings-btn">设置仓库</button>
+                        <button id="select-folder-btn" class="repo-settings-btn" style="display:none;">选择文件夹</button>
                     </div>
                 </div>
                 <div class="search-results"></div>
@@ -153,16 +154,11 @@
         </div>
     </div>
 
-    <!-- 版本号和调试选项 -->
-    <div class="version-info" style="position: fixed; bottom: 5px; left: 5px; font-size: 10px; opacity: 0.5; z-index: 999;">
-        <span id="app-version">v1.0.0</span>
-        <button id="toggle-debug" style="background: none; border: none; color: inherit; cursor: pointer; font-size: inherit; padding: 0;">🔧</button>
-    </div>
     
     <!-- 脚本加载顺序很重要，确保依赖关系正确 -->
     <script src="./js/config.js"></script>
     <script src="./js/github-api.js"></script>
-    <script src="./js/gitee-api.js"></script>
+    <script src="./js/localmusic.js"></script>
     <script src="./js/background.js"></script>
     <script src="./js/bg-init.js"></script>
     <!-- 先加载UI管理器 -->
