@@ -12,7 +12,24 @@ class MusicSearch {
         this.currentSource = 'github'; // 默认为GitHub
         this.isSearching = false;
         
+        // 初始化时加载自定义仓库设置
+        this.loadCustomRepoSettings();
+        
         this.bindEvents();
+    }
+    
+    loadCustomRepoSettings() {
+        // 从本地存储加载自定义仓库设置
+        const customGithubRepo = localStorage.getItem(CONFIG.storage.githubRepo);
+        const customGiteeRepo = localStorage.getItem(CONFIG.storage.giteeRepo);
+        
+        if (customGithubRepo) {
+            CONFIG.api.github.repo = customGithubRepo;
+        }
+        
+        if (customGiteeRepo) {
+            CONFIG.api.gitee.repo = customGiteeRepo;
+        }
     }
     
     bindEvents() {
@@ -34,6 +51,103 @@ class MusicSearch {
                 this.currentSource = radio.value;
             });
         });
+        
+        // 设置仓库按钮
+        document.getElementById('set-repo-btn').addEventListener('click', () => {
+            this.showRepoSettingsDialog();
+        });
+    }
+    
+    showRepoSettingsDialog() {
+        // 创建模态对话框
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        
+        // 创建对话框内容
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>设置音乐仓库</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="repo-settings">
+                        <div class="setting-group">
+                            <label>GitHub 仓库:</label>
+                            <input type="text" id="github-repo-input" placeholder="用户名/仓库名" value="${CONFIG.api.github.repo}">
+                        </div>
+                        <div class="setting-group">
+                            <label>Gitee 仓库:</label>
+                            <input type="text" id="gitee-repo-input" placeholder="用户名/仓库名" value="${CONFIG.api.gitee.repo}">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="reset-repos" class="btn-secondary">恢复默认</button>
+                    <button id="save-repos" class="btn-primary">保存设置</button>
+                </div>
+            </div>
+        `;
+        
+        // 添加到文档中
+        document.body.appendChild(modal);
+        
+        // 绑定关闭按钮事件
+        modal.querySelector('.modal-close').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+        
+        // 保存设置
+        modal.querySelector('#save-repos').addEventListener('click', () => {
+            const githubRepo = modal.querySelector('#github-repo-input').value.trim();
+            const giteeRepo = modal.querySelector('#gitee-repo-input').value.trim();
+            
+            if (githubRepo) {
+                CONFIG.api.github.repo = githubRepo;
+                localStorage.setItem(CONFIG.storage.githubRepo, githubRepo);
+            }
+            
+            if (giteeRepo) {
+                CONFIG.api.gitee.repo = giteeRepo;
+                localStorage.setItem(CONFIG.storage.giteeRepo, giteeRepo);
+            }
+            
+            // 显示保存成功提示
+            this.showToast('仓库设置已保存');
+            
+            // 关闭对话框
+            document.body.removeChild(modal);
+        });
+        
+        // 重置为默认
+        modal.querySelector('#reset-repos').addEventListener('click', () => {
+            CONFIG.api.github.repo = CONFIG.api.github.defaultRepo;
+            CONFIG.api.gitee.repo = CONFIG.api.gitee.defaultRepo;
+            
+            localStorage.removeItem(CONFIG.storage.githubRepo);
+            localStorage.removeItem(CONFIG.storage.giteeRepo);
+            
+            modal.querySelector('#github-repo-input').value = CONFIG.api.github.defaultRepo;
+            modal.querySelector('#gitee-repo-input').value = CONFIG.api.gitee.defaultRepo;
+            
+            this.showToast('已恢复默认仓库设置');
+        });
+    }
+    
+    showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        // 2秒后自动消失
+        setTimeout(() => {
+            toast.classList.add('hide');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 2000);
     }
     
     performSearch() {

@@ -7,11 +7,13 @@ const CONFIG = {
     api: {
         github: {
             baseUrl: 'https://api.github.com',
-            repo: 'haoze-evolluling/MusicStorage' // GitHub音乐仓库
+            repo: 'haoze-evolluling/MusicStorage', // 默认GitHub音乐仓库
+            defaultRepo: 'haoze-evolluling/MusicStorage' // 默认GitHub音乐仓库（用于重置）
         },
         gitee: {
             baseUrl: 'https://gitee.com/api/v5',
-            repo: 'your-username/music-repo' // 替换为您的Gitee音乐仓库
+            repo: 'your-username/music-repo', // 默认Gitee音乐仓库
+            defaultRepo: 'your-username/music-repo' // 默认Gitee音乐仓库（用于重置）
         }
     },
     
@@ -26,6 +28,7 @@ const CONFIG = {
     background: {
         defaultType: 'default', // 默认背景: 'default', 'cover', 'custom'
         blurLevel: 30, // 背景模糊程度
+        particlesOptions: {} // 保留空对象以防止错误
     },
     
     // 存储相关键名
@@ -36,6 +39,8 @@ const CONFIG = {
         background: 'konghou_background',
         customBg: 'konghou_custom_bg',
         playHistory: 'konghou_history',
-        lastPlaylist: 'konghou_last_playlist'
+        lastPlaylist: 'konghou_last_playlist',
+        githubRepo: 'konghou_github_repo',
+        giteeRepo: 'konghou_gitee_repo'
     }
 }; 

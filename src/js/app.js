@@ -19,9 +19,6 @@ class App {
             // 显示欢迎信息
             this.showWelcomeMessage();
             
-            // 加载particles.js
-            this.loadParticles();
-            
             // 初始化IPC通信（如果在Electron环境中）
             if (isElectron()) {
                 this.initIPC();
@@ -33,13 +30,6 @@ class App {
             // 添加关于按钮
             this.setupAboutButton();
         });
-    }
-    
-    loadParticles() {
-        // particles.js已在HTML中引入，这里直接使用
-        if (typeof particlesJS !== 'undefined') {
-            particlesJS('particles-js', CONFIG.background.particlesOptions);
-        }
     }
     
     showWelcomeMessage() {
