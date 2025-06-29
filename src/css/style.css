@@ -39,6 +39,7 @@ body {
     width: 100vw;
     position: relative;
     background-color: var(--bg-white);
+    overflow: hidden;
 }
 
 /* 背景 */
@@ -50,9 +51,11 @@ body {
     left: 0;
     background-size: cover;
     background-position: center;
-    opacity: 0.1; /* 减少不透明度 */
+    background-repeat: no-repeat;
+    opacity: 0.5; /* 增加不透明度 */
     transition: background-image 0.5s ease;
     z-index: -1;
+    pointer-events: none; /* 确保背景不会阻止点击事件 */
 }
 
 /* 内容区域 */
@@ -63,7 +66,7 @@ body {
 
 /* 侧边栏折叠按钮 */
 .sidebar-toggle-btn {
-    position: absolute;
+    position: fixed;
     left: var(--sidebar-width);
     top: 50%;
     transform: translateY(-50%);
@@ -74,11 +77,12 @@ body {
     border: none;
     border-radius: 0 4px 4px 0;
     cursor: pointer;
-    z-index: 10;
+    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: left 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-toggle-btn .toggle-icon {
@@ -86,11 +90,12 @@ body {
     transition: transform 0.3s ease;
 }
 
-.sidebar.collapsed + .sidebar-toggle-btn {
-    left: var(--sidebar-collapsed);
+/* 明确设置侧边栏收起时的按钮位置 */
+.sidebar.collapsed ~ .sidebar-toggle-btn {
+    left: 0;
 }
 
-.sidebar.collapsed + .sidebar-toggle-btn .toggle-icon {
+.sidebar.collapsed ~ .sidebar-toggle-btn .toggle-icon {
     transform: rotate(180deg);
 }
 
@@ -101,12 +106,18 @@ body {
     background-color: var(--bg-sidebar);
     overflow-y: auto;
     border-right: 1px solid var(--border-color);
-    transition: width 0.3s ease;
+    transition: all 0.3s ease;
     box-shadow: var(--shadow-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
 }
 
 .sidebar.collapsed {
-    width: var(--sidebar-collapsed);
+    width: 0;
+    overflow: hidden;
+    border-right: none;
 }
 
 .sidebar.collapsed .app-header .logo h1,
@@ -339,22 +350,28 @@ body {
     transform: scale(1.05);
 }
 
-/* 右侧主播放区 */
+/* 右侧区域：播放器主区域 */
 .main-player {
-    flex: 1;
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    height: calc(100vh - var(--controls-height));
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding: 30px;
-    height: calc(100vh - var(--controls-height));
+    justify-content: center;
+    padding: 20px;
     overflow-y: auto;
-    background-color: var(--bg-white);
-    transition: margin-left 0.3s ease;
+    transition: all 0.3s ease;
+    z-index: 10;
 }
 
-.sidebar.collapsed + .main-player {
-    margin-left: calc(var(--sidebar-collapsed) - var(--sidebar-width));
+/* 侧边栏收起时的播放器位置 */
+.sidebar.collapsed ~ .main-player {
+    left: 0;
+    width: 100%;
+    padding-left: 40px; /* 为侧边栏展开按钮留出空间 */
 }
 
 .player-content {
@@ -491,6 +508,11 @@ body {
     justify-content: space-between;
     padding: 0 30px;
     color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
 }
 
 .control-buttons {
@@ -723,23 +745,71 @@ body {
 
 .background-options {
     display: flex;
-    gap: 15px;
     flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
 }
 
 .bg-option {
-    padding: 10px 20px;
+    padding: 8px 15px;
     background-color: var(--bg-light);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    transition: all 0.3s;
+    border-radius: 4px;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
 .bg-option:hover, .bg-option.active {
     background-color: var(--primary-color);
     color: white;
+}
+
+.bg-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.bg-preview {
+    width: 100px;
+    height: 60px;
+    border-radius: 4px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid transparent;
+    overflow: hidden;
+}
+
+.bg-preview:hover {
     border-color: var(--primary-color);
+}
+
+.bg-preview.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.3);
+}
+
+.bg-select-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    padding: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.bg-preview:hover .bg-select-btn {
+    opacity: 1;
 }
 
 #close-settings {

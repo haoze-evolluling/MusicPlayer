@@ -1,113 +1,73 @@
-# 箜篌音乐播放器 (Konghou Music Player)
+# 箜篌 - MusicPlayer
 
-一个功能丰富的跨平台音乐播放器，基于Electron开发，支持在线音乐播放、歌词同步显示、播放列表管理等功能。
 
-## 功能特点
+**箜篌** 是一款功能丰富、界面美观的桌面音乐播放器，基于 Electron 构建。它允许用户播放在线的音乐，支持从 GitHub 和 Gitee 仓库加载歌单，并提供了包括歌曲搜索、歌词同步显示、播放列表管理以及个性化设置在内的多种功能。
 
-- **音乐播放**：支持在线音频格式播放，提供标准播放控制功能
-- **播放模式**：支持列表循环、单曲循环和随机播放
-- **倍速播放**：支持0.5x至4.0x的播放速度调整
-- **播放列表**：支持显示正在播放列表、播放历史和自定义歌单
-- **在线搜索**：支持在GitHub和Gitee仓库中搜索音乐
-- **歌词显示**：支持同步滚动显示歌词，支持翻译显示和全屏模式
-- **界面美观**：响应式设计，支持自定义背景
-- **跨平台**：支持Windows、macOS和Linux系统
+---
 
-## 安装与运行
+## ✨ 功能特性
 
-### 方法一：从源代码构建
+- **🎵 在线音乐播放**:
+  - 支持多种音频格式的在线播放。
+  - 标准播放控制：播放/暂停、上一首、下一首。
+  - 播放模式切换：列表循环、单曲循环、随机播放。
+  - 0.5x 至 4.0x 播放速度调节。
+  - 音量控制及静音。
 
-1. 克隆仓库
-   ```
-   git clone https://github.com/your-username/konghou-musicplayer.git
-   cd konghou-musicplayer
-   ```
+- **📜 播放列表管理**:
+  - **正在播放**: 清晰展示当前播放队列。
+  - **播放历史**: 快速回顾最近听过的歌曲。
+  - **加载歌单**: 支持加载和管理本地或在线歌单。
 
-2. 安装依赖
-   ```
-   npm install
-   ```
+- **🔍 跨平台歌曲搜索**:
+  - 支持在 GitHub 和 Gitee 两大平台上搜索音乐资源。
+  - 搜索结果清晰展示歌曲、歌手和专辑信息。
 
-3. 运行应用
-   ```
-   npm start
-   ```
+- **🎤 同步歌词显示**:
+  - 播放时同步滚动高亮歌词。
+  - 支持翻译歌词的显示与隐藏。
+  - 提供沉浸式歌词全屏模式。
 
-4. 构建应用
-   ```
-   npm run build
-   ```
+- **🎨 美观的 UI 与交互**:
+  - **封面背景模糊**: 播放界面背景自动模糊显示当前歌曲封面。
+  - **动态反馈**: 流畅的点击和过渡动画效果。
+  - **响应式布局**: 良好适配不同尺寸的桌面窗口。
+  - **信息弹窗**: 方便地查看应用版本、作者和功能说明。
 
-### 方法二：下载已构建的应用
+## 🛠️ 技术栈
 
-从[Release页面](https://github.com/your-username/konghou-musicplayer/releases)下载对应平台的安装包，直接安装即可。
+- **核心框架**: [Electron](https://www.electronjs.org/)
+- **前端技术**: HTML, CSS, JavaScript
+- **主要依赖库**:
+  - [jQuery](https://jquery.com/): DOM 操作与事件处理。
+  - [axios](https://axios-http.com/): HTTP 请求，用于获取音乐和歌词数据。
+  - [layer.js](http://layer.layui.com/): 丰富的弹窗解决方案。
 
-## 配置说明
 
-1. **音乐库配置**：
-   - 编辑`src/js/config.js`文件
-   - 将`CONFIG.api.github.repo`和`CONFIG.api.gitee.repo`修改为你自己的音乐仓库
 
-2. **默认设置**：
-   - 可以在`config.js`文件中修改默认音量、播放速度和循环模式等设置
-
-## 资源说明
-
-需要添加以下静态资源：
-
-1. **播放器图标**：
-   - `src/assets/logo.png`：应用logo
-   - `src/assets/default-cover.png`：默认封面图片
-
-2. **控制按钮图标**：
-   - `src/assets/play.svg`：播放按钮
-   - `src/assets/pause.svg`：暂停按钮  
-   - `src/assets/next.svg`：下一首按钮
-   - `src/assets/prev.svg`：上一首按钮
-   - `src/assets/repeat.svg`：列表循环按钮
-   - `src/assets/repeat-one.svg`：单曲循环按钮
-   - `src/assets/shuffle.svg`：随机播放按钮
-   - `src/assets/volume.svg`：音量按钮
-   - `src/assets/volume-low.svg`：低音量按钮
-   - `src/assets/volume-mute.svg`：静音按钮
-   - `src/assets/settings.svg`：设置按钮
-
-3. **播放列表封面**：
-   - `src/assets/playlist-covers/favorites.jpg`：我喜欢的音乐封面
-   - `src/assets/playlist-covers/history.jpg`：最近播放封面
-   - `src/assets/playlist-covers/chinese.jpg`：华语经典封面
-   - `src/assets/playlist-covers/western.jpg`：欧美流行封面
-   - `src/assets/playlist-covers/custom.jpg`：自定义封面
-
-## 快捷键
-
-- **空格**：播放/暂停
-- **Ctrl + 左箭头**：上一首
-- **Ctrl + 右箭头**：下一首
-- **ESC**：退出全屏歌词
-
-## 音乐仓库格式
-
-在GitHub或Gitee上创建音乐仓库时，推荐使用以下目录结构：
+## 📁 项目结构
 
 ```
-music-repo/
-  ├── 歌手1-歌曲1.mp3
-  ├── 歌手1-歌曲1.lrc (歌词文件，可选)
-  ├── 歌手1-歌曲1.jpg (封面图片，可选)
-  ├── 歌手2-歌曲2.mp3
-  └── ...
+MusicPlayer/
+├── src/                      # 源代码目录
+│   ├── index.html            # 主页面
+│   ├── css/                  # 样式文件
+│   ├── js/                   # 脚本文件 (核心逻辑)
+│   ├── assets/               # 图标、封面等静态资源
+│   └── pic/                  # 背景图片
+├── index.js                  # Electron 主进程入口文件
+├── preload.js                # Electron 预加载脚本
+├── package.json              # 项目依赖与脚本配置
+└── electron-builder.json     # Electron Builder 配置文件
 ```
 
-## 开发者说明
+## 🤝 贡献
 
-项目使用以下技术栈开发：
+欢迎各种形式的贡献，包括但不限于：
+- 提交 bug 报告或功能建议
+- 提交 Pull Request 改进代码
+- 帮助完善文档
 
-- **Electron**：跨平台桌面应用开发框架
-- **HTML/CSS/JavaScript**：前端基础技术
-- **jQuery**：简化DOM操作
-- **Layer.js**：弹窗组件
+## 📄 开源许可
 
-## 许可证
-
-本项目基于MIT许可证开源。 
+该项目基于 [MIT License](LICENSE) 开源。

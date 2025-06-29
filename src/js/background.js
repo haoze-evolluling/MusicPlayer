@@ -7,6 +7,7 @@ class BackgroundManager {
         this.container = document.body;
         this.currentType = localStorage.getItem(CONFIG.storage.background) || 'default';
         this.customBgUrl = localStorage.getItem(CONFIG.storage.customBg) || '';
+        this.presetBg = localStorage.getItem('konghou_preset_bg') || 'preset1';
         
         this.init();
     }
@@ -37,6 +38,24 @@ class BackgroundManager {
             });
         });
         
+        // 监听预设背景选择按钮
+        document.querySelectorAll('.bg-select-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const presetType = btn.dataset.bg;
+                this.presetBg = presetType;
+                localStorage.setItem('konghou_preset_bg', presetType);
+                
+                // 设置为预设背景类型
+                this.setBackgroundType('preset');
+                
+                // 高亮当前选中的预设背景
+                document.querySelectorAll('.bg-preview').forEach(preview => {
+                    preview.classList.toggle('active', preview.dataset.bg === presetType);
+                });
+            });
+        });
+        
         // 监听自定义背景文件选择
         document.getElementById('custom-bg').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -62,8 +81,12 @@ class BackgroundManager {
         switch (type) {
             case 'default':
                 // 使用默认背景图片
-                this.bgOverlay.style.backgroundImage = 'url(./pic/background01.png)';
+                this.bgOverlay.style.backgroundImage = 'url(./assets/pic/background.png)';
                 this.bgOverlay.style.opacity = '0.5';
+                break;
+            case 'preset':
+                // 使用预设背景
+                this.setPresetBackground();
                 break;
             case 'cover':
                 // 封面背景将在播放时设置
@@ -71,12 +94,35 @@ class BackgroundManager {
             case 'custom':
                 this.setCustomBackground();
                 break;
+            default:
+                // 默认使用背景图片
+                this.bgOverlay.style.backgroundImage = 'url(./assets/pic/background.png)';
+                this.bgOverlay.style.opacity = '0.5';
+                break;
         }
+        
+        console.log('设置背景类型:', type, '背景图片:', this.bgOverlay.style.backgroundImage);
+    }
+    
+    setPresetBackground() {
+        switch (this.presetBg) {
+            case 'preset1':
+                this.bgOverlay.style.backgroundImage = 'url(./assets/pic/background.png)';
+                break;
+            // 可以添加更多预设背景
+            default:
+                this.bgOverlay.style.backgroundImage = 'url(./assets/pic/background.png)';
+        }
+        this.bgOverlay.style.opacity = '0.5';
     }
     
     setCustomBackground() {
         if (this.customBgUrl) {
             this.bgOverlay.style.backgroundImage = `url(${this.customBgUrl})`;
+            this.bgOverlay.style.opacity = '0.5';
+        } else {
+            // 如果没有自定义背景，使用默认背景
+            this.bgOverlay.style.backgroundImage = 'url(./assets/pic/background.png)';
             this.bgOverlay.style.opacity = '0.5';
         }
     }

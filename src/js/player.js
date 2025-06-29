@@ -169,9 +169,18 @@ class MusicPlayer {
         
         // 更新封面
         if (currentTrack.cover) {
-            this.albumCoverElem.src = currentTrack.cover;
-            // 如果背景模式为封面，则更新背景
-            backgroundManager.setCoverBackground(currentTrack.cover);
+            // 创建一个新的Image对象来预加载封面
+            const img = new Image();
+            img.onload = () => {
+                this.albumCoverElem.src = currentTrack.cover;
+                // 如果背景模式为封面，则更新背景
+                backgroundManager.setCoverBackground(currentTrack.cover);
+            };
+            img.onerror = () => {
+                console.error('封面加载失败:', currentTrack.cover);
+                this.albumCoverElem.src = './assets/default-cover.png';
+            };
+            img.src = currentTrack.cover;
         } else {
             this.albumCoverElem.src = './assets/default-cover.png';
         }
@@ -229,7 +238,14 @@ class MusicPlayer {
         if (this.isPlaying) {
             this.pause();
         } else {
-            this.play();
+            if (this.audio.src) {
+                // 直接播放，不重置音频位置
+                this.audio.play().catch(err => console.error('播放失败:', err));
+            } else if (this.playlist.length > 0) {
+                // 如果还没有设置音频源，则更新当前曲目信息并播放
+                this.updateCurrentTrackInfo();
+                this.play();
+            }
         }
     }
     

@@ -23,6 +23,16 @@ class UIManager {
         
         // 从localStorage读取侧边栏状态
         this.loadSidebarState();
+        
+        // 确保按钮位置正确
+        window.addEventListener('load', () => {
+            this.updateSidebarTogglePosition();
+        });
+        
+        // 窗口大小变化时更新按钮位置
+        window.addEventListener('resize', () => {
+            this.updateSidebarTogglePosition();
+        });
     }
     
     initEvents() {
@@ -104,8 +114,32 @@ class UIManager {
      */
     toggleSidebar() {
         this.sidebar.classList.toggle('collapsed');
+        
+        // 使用setTimeout确保DOM已经更新
+        setTimeout(() => {
+            this.updateSidebarTogglePosition();
+        }, 10);
+        
         // 保存状态到localStorage
         localStorage.setItem('sidebar_collapsed', this.sidebar.classList.contains('collapsed'));
+    }
+    
+    /**
+     * 更新侧边栏切换按钮位置
+     */
+    updateSidebarTogglePosition() {
+        const isCollapsed = this.sidebar.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            // 侧边栏收起时，按钮位于页面左侧边缘
+            this.sidebarToggleBtn.style.left = '0px';
+            this.sidebarToggleBtn.querySelector('.toggle-icon').innerHTML = '▶';
+        } else {
+            // 侧边栏展开时，按钮位于侧边栏右侧边缘
+            const sidebarWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width'));
+            this.sidebarToggleBtn.style.left = `${sidebarWidth}px`;
+            this.sidebarToggleBtn.querySelector('.toggle-icon').innerHTML = '◀';
+        }
     }
     
     /**
@@ -116,6 +150,11 @@ class UIManager {
         if (isCollapsed) {
             this.sidebar.classList.add('collapsed');
         }
+        
+        // 使用setTimeout确保DOM已经更新
+        setTimeout(() => {
+            this.updateSidebarTogglePosition();
+        }, 10);
     }
     
     /**
@@ -164,6 +203,14 @@ class UIManager {
         document.querySelectorAll('.bg-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.bg === currentBgType);
         });
+        
+        // 如果是预设背景，高亮当前选中的预设背景
+        if (currentBgType === 'preset') {
+            const currentPreset = localStorage.getItem('konghou_preset_bg') || 'preset1';
+            document.querySelectorAll('.bg-preview').forEach(preview => {
+                preview.classList.toggle('active', preview.dataset.bg === currentPreset);
+            });
+        }
     }
     
     // 显示消息弹窗

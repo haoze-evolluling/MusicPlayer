@@ -16,6 +16,9 @@ class App {
     initApp() {
         // 确保在DOM加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
+            // 初始化背景
+            this.initBackground();
+            
             // 显示欢迎信息
             this.showWelcomeMessage();
             
@@ -30,6 +33,43 @@ class App {
             // 添加关于按钮
             this.setupAboutButton();
         });
+    }
+    
+    initBackground() {
+        // 确保背景图片正确加载
+        if (backgroundManager) {
+            // 强制重新应用背景设置
+            const currentBgType = localStorage.getItem(CONFIG.storage.background) || 'default';
+            backgroundManager.setBackgroundType(currentBgType);
+            
+            // 如果没有背景，默认使用预设背景
+            if (!document.querySelector('.bg-overlay').style.backgroundImage) {
+                backgroundManager.setBackgroundType('default');
+            }
+            
+            // 手动设置背景图片，确保能够显示
+            setTimeout(() => {
+                const bgOverlay = document.querySelector('.bg-overlay');
+                if (!bgOverlay.style.backgroundImage || bgOverlay.style.backgroundImage === 'none') {
+                    console.log('手动设置背景图片');
+                    bgOverlay.style.backgroundImage = 'url(./assets/pic/background.png)';
+                    bgOverlay.style.opacity = '0.5';
+                }
+            }, 100);
+        }
+        
+        // 预加载背景图片
+        const preloadImg = new Image();
+        preloadImg.onload = () => {
+            console.log('背景图片预加载成功');
+            const bgOverlay = document.querySelector('.bg-overlay');
+            bgOverlay.style.backgroundImage = `url(${preloadImg.src})`;
+            bgOverlay.style.opacity = '0.5';
+        };
+        preloadImg.onerror = (err) => {
+            console.error('背景图片加载失败:', err);
+        };
+        preloadImg.src = './assets/pic/background.png';
     }
     
     showWelcomeMessage() {
@@ -108,4 +148,4 @@ class App {
 }
 
 // 初始化应用
-const app = new App(); 
+const app = new App();

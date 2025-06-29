@@ -10,15 +10,16 @@
     <link rel="stylesheet" href="./css/animations.css">
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="./js/demo-data.js"></script>
+    <style>
+        /* 直接在HTML中设置背景，确保能够显示 */
+        .bg-overlay {
+            background-image: url('./assets/pic/background.png');
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- 侧边栏折叠按钮 -->
-        <button id="sidebar-toggle" class="sidebar-toggle-btn">
-            <span class="toggle-icon">◀</span>
-        </button>
-        
-        <!-- 左侧区域：音乐列表 -->
+        <!-- 侧边栏 -->
         <div class="sidebar">
             <div class="app-header">
                 <div class="logo">
@@ -54,6 +55,11 @@
                 <div class="search-results"></div>
             </div>
         </div>
+        
+        <!-- 侧边栏折叠按钮 - 移到侧边栏后面 -->
+        <button id="sidebar-toggle" class="sidebar-toggle-btn">
+            <span class="toggle-icon">◀</span>
+        </button>
         
         <!-- 右侧区域：播放器主区域 -->
         <div class="main-player">
@@ -139,8 +145,13 @@
             <div class="settings-section">
                 <h3>背景设置</h3>
                 <div class="background-options">
-                    <button class="bg-option" data-bg="default">默认</button>
-                    <button class="bg-option" data-bg="cover">封面</button>
+                    <button class="bg-option" data-bg="default">默认背景</button>
+                    <button class="bg-option" data-bg="cover">当前封面</button>
+                    <div class="bg-preview-container">
+                        <div class="bg-preview" style="background-image: url('./assets/pic/background.png');" data-bg="preset1">
+                            <button class="bg-select-btn" data-bg="preset1">选择</button>
+                        </div>
+                    </div>
                     <button class="bg-option" data-bg="custom">自定义</button>
                     <input type="file" id="custom-bg" accept="image/*" style="display: none;">
                 </div>
