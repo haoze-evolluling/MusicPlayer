@@ -45,7 +45,7 @@ contextBridge.exposeInMainWorld('electron', {
   
   // 应用信息
   appInfo: {
-    version: process.env.npm_package_version || '6.26.3',
+    version: process.env.npm_package_version || '1.2.1',
     name: 'Konghou Music Player'
   },
   

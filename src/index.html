@@ -18,7 +18,7 @@
         <!-- 侧边栏 -->
         <div class="sidebar">
             <div class="app-header">
-                <div class="logo">
+                <div class="logo" id="logo-container">
                     <img src="./assets/logo.png" alt="箜篌">
                     <h1>箜篌 - MusicPlayer</h1>
                 </div>
@@ -118,9 +118,6 @@
         </div>
     </div>
     
-    <!-- 设置按钮和弹窗 -->
-    <button id="settings-btn" class="floating-btn"><img src="./assets/settings.svg" alt="设置"></button>
-    
     <!-- 音频元素 -->
     <audio id="audio-player"></audio>
     
@@ -131,7 +128,7 @@
             <!-- 背景设置区域将由JS动态插入 -->
             <div class="settings-section">
                 <h3>关于</h3>
-                <p>箜篌音乐播放器 v6.26.3</p>
+                <p>箜篌音乐播放器 v1.2.1</p>
                 <p>功能丰富的在线音乐播放器</p>
             </div>
             <button id="close-settings">关闭</button>

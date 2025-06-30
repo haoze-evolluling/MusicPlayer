@@ -19,6 +19,7 @@
     background: none;
     border: none;
     cursor: pointer;
+    font-size: 0.9rem;
 }
 
 .tab-btn.active, .tab-btn:hover {
@@ -54,6 +55,7 @@
     color: var(--text-primary);
     background-color: var(--bg-white);
     box-shadow: var(--shadow-light);
+    font-size: 0.85rem;
 }
 
 .current-playlist li:hover {
@@ -82,7 +84,7 @@
     border-radius: 8px;
     color: var(--text-primary);
     margin-bottom: 12px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     box-shadow: var(--shadow-light);
     transition: all 0.3s;
 }
@@ -114,6 +116,7 @@
     display: flex;
     gap: 20px;
     align-items: center;
+    font-size: 0.85rem;
 }
 
 .source-selector label {
@@ -130,7 +133,7 @@
     border: none;
     border-radius: 6px;
     margin-left: auto;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     transition: all 0.3s;
     cursor: pointer;
 }
@@ -176,12 +179,13 @@
     flex: 1;
     font-weight: 500;
     color: var(--text-primary);
+    font-size: 0.85rem;
 }
 
 .file-desc, .file-artist {
     margin-left: 12px;
     color: #333333; /* 由var(--text-secondary)改为#333333，提高对比度 */
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 .file-item .play-btn {
@@ -191,7 +195,7 @@
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 0.9em;
+    font-size: 0.8rem;
     transition: all 0.3s;
     cursor: pointer;
 }
@@ -204,7 +208,7 @@
 /* 播放器内容 */
 .player-content {
     width: 100%;
-    max-width: 800px;
+    max-width: 750px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -223,8 +227,8 @@
 }
 
 .album-cover {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: var(--shadow-medium);
@@ -491,7 +495,7 @@
 }
 
 .settings-content h2 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     color: var(--primary-color);
     margin-bottom: 20px;
     padding-bottom: 10px;
@@ -500,10 +504,11 @@
 
 .settings-section {
     margin-bottom: 25px;
+    font-size: 0.85rem;
 }
 
 .settings-section h3 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: var(--text-primary);
     margin-bottom: 15px;
     font-weight: 500;
@@ -659,6 +664,7 @@
 .modal-header h3 {
     margin: 0;
     font-weight: 600;
+    font-size: 1.2rem;
 }
 
 .modal-close {
@@ -671,6 +677,7 @@
 
 .modal-body {
     padding: 20px;
+    font-size: 0.85rem;
 }
 
 .modal-footer {
@@ -761,43 +768,16 @@
     transform: translateX(-50%) translateY(20px);
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    :root {
-        --sidebar-width: 320px;
-    }
-    
-    .music-info-container {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .album-cover {
-        margin-right: 0;
-        margin-bottom: 20px;
-    }
+/* 添加logo点击样式 */
+.logo {
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-/* 播放控制区域垂直布局 */
-.player-controls.vertical-layout {
-    flex-direction: column;
-    height: auto;
-    padding: 10px;
-    gap: 10px;
+.logo:hover {
+    transform: scale(1.05);
 }
 
-.player-controls.vertical-layout .progress-container {
-    width: 100%;
-    order: -1;
-}
-
-.player-controls.vertical-layout .control-buttons {
-    width: 100%;
-    justify-content: space-between;
-}
-
-.player-controls.vertical-layout .volume-controls {
-    width: 100%;
-    justify-content: space-between;
+.logo:active {
+    transform: scale(0.95);
 } 

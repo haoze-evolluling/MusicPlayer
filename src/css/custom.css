@@ -5,14 +5,14 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto; /* 允许主区域滚动 */
-    padding-top: 10vh !important; /* 向下移动10% */
+    padding-top: 5vh !important; /* 向下移动5%，之前是10% */
     justify-content: center; /* 内容垂直居中 */
     transition: padding-top 0.5s ease; /* 添加平滑过渡效果 */
 }
 
 .player-content {
     padding: 15px 0; /* 增加内容区域的上下间距 */
-    max-width: 850px; /* 限制最大宽度，提升可读性 */
+    max-width: 800px; /* 限制最大宽度，与1200x800窗口尺寸匹配 */
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -36,9 +36,9 @@
     flex: 1; /* 占用剩余空间 */
     display: flex;
     flex-direction: column;
-    min-height: 300px; /* 设置固定的最小高度 */
-    height: 300px; /* 设置固定高度 */
-    max-height: 300px; /* 限制最大高度与固定高度一致 */
+    min-height: 250px; /* 设置固定的最小高度，之前是300px */
+    height: 250px; /* 设置固定高度，之前是300px */
+    max-height: 250px; /* 限制最大高度与固定高度一致，之前是300px */
     overflow: hidden; /* 隐藏溢出内容 */
     width: 100%; /* 确保宽度为100% */
 }
@@ -268,6 +268,7 @@ button:focus, input:focus, select:focus {
 /* 侧边栏优化 */
 .tab-content {
     padding: 20px; /* 增加标签内容的内边距 */
+    font-size: 0.85rem; /* 减小标签内容的字体大小 */
 }
 
 .current-playlist li {
@@ -280,55 +281,33 @@ button:focus, input:focus, select:focus {
     box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1); /* 增强阴影效果 */
 }
 
-/* 响应式间距调整 - 保持歌词区域尺寸一致 */
-@media (max-width: 1024px) {
-    .lyrics-container {
-        height: 280px; /* 平板设备上的固定高度 */
-        min-height: 280px;
-        max-height: 280px;
+/* 保留打印样式 */
+@media print {
+    .sidebar, .player-controls, .floating-btn, .sidebar-toggle-btn {
+        display: none !important;
     }
-}
-
-@media (max-width: 768px) {
-    .music-info-container {
-        padding: 20px;
-        margin-bottom: 20px;
+    
+    .main-player {
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
     }
     
     .lyrics-container {
-        height: 250px; /* 手机设备上的固定高度 */
-        min-height: 250px;
-        max-height: 250px;
-        padding: 20px;
+        height: auto !important;
+        overflow: visible !important;
     }
     
-    .player-controls {
-        padding: 0 20px;
+    .lyrics-wrapper {
+        height: auto !important;
+        overflow: visible !important;
+        mask-image: none !important;
+        -webkit-mask-image: none !important;
     }
     
-    .tab-content {
-        padding: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .music-info-container {
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .lyrics-container {
-        height: 200px; /* 小型手机设备上的固定高度 */
-        min-height: 200px;
-        max-height: 200px;
-        padding: 15px;
-    }
-    
-    .player-controls {
-        padding: 0 15px;
-    }
-    
-    .tab-content {
-        padding: 10px;
+    .lyrics-line {
+        color: black !important;
+        opacity: 1 !important;
     }
 } 

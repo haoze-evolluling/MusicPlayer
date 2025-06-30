@@ -16,7 +16,7 @@ class UIManager {
         this.tabContents = document.querySelectorAll('.tab-content');
         
         // 设置面板相关元素
-        this.settingsBtn = document.getElementById('settings-btn');
+        this.logoContainer = document.getElementById('logo-container');
         this.settingsPanel = document.getElementById('settings-panel');
         this.closeSettingsBtn = document.getElementById('close-settings');
         
@@ -82,7 +82,7 @@ class UIManager {
         });
         
         // 设置面板
-        this.settingsBtn.addEventListener('click', () => {
+        this.logoContainer.addEventListener('click', () => {
             this.toggleSettings();
         });
         
@@ -335,7 +335,7 @@ class UIManager {
         const aboutContent = `
             <div class="about-dialog">
                 <h2>箜篌音乐播放器</h2>
-                <p>版本: 6.26.3</p>
+                <p>版本: 1.2.1</p>
                 <p>功能丰富的在线音乐播放器，支持在线歌曲搜索、歌词同步显示、多种播放模式等。</p>
                 <p>基于Electron开发，提供了响应式界面设计，可在PC和移动设备上使用。</p>
             </div>
@@ -349,7 +349,7 @@ class UIManager {
                 area: ['300px', '250px']
             });
         } else {
-            alert('箜篌音乐播放器 v6.26.3\n功能丰富的在线音乐播放器');
+            alert('箜篌音乐播放器 v1.2.1\n功能丰富的在线音乐播放器');
         }
     }
 }

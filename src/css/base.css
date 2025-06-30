@@ -10,7 +10,7 @@
     --bg-light: #f5f5f5; /* 浅灰背景 */
     --bg-sidebar: #f0f7ff; /* 侧边栏背景 */
     --border-color: #e0e0e0;
-    --sidebar-width: 365px; /* 侧边栏宽度增加20% (从304px增至365px) */
+    --sidebar-width: 325px; /* 侧边栏宽度从365px调整到325px，以适应窄屏 */
     --sidebar-collapsed: 60px; /* 收起时的宽度 */
     --controls-height: 90px;
     --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -186,7 +186,7 @@ body {
 }
 
 .logo h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* 从1.5rem减小到1.3rem */
     font-weight: bold;
     color: var(--primary-color);
 }
@@ -196,8 +196,8 @@ body {
     position: fixed;
     top: 0;
     left: auto; /* 修改为auto，不再左对齐 */
-    right: 6%; /* 从右侧留出6%的间距 */
-    width: calc(90% - var(--sidebar-width)); /* 修改为原来宽度的90% */
+    right: 2.8%; /* 从右侧留出4%的间距 */
+    width: calc(94% - var(--sidebar-width)); /* 修改为原来宽度的94%，之前是90% */
     height: calc(100vh - var(--controls-height));
     display: flex;
     flex-direction: column;
