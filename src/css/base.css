@@ -195,8 +195,9 @@ body {
 .main-player {
     position: fixed;
     top: 0;
-    left: var(--sidebar-width);
-    width: calc(100% - var(--sidebar-width));
+    left: auto; /* 修改为auto，不再左对齐 */
+    right: 6%; /* 从右侧留出6%的间距 */
+    width: calc(90% - var(--sidebar-width)); /* 修改为原来宽度的90% */
     height: calc(100vh - var(--controls-height));
     display: flex;
     flex-direction: column;
@@ -212,7 +213,8 @@ body {
 /* 侧边栏收起时的播放器位置 */
 .sidebar.collapsed ~ .main-player {
     left: 0;
-    width: 100%;
+    right: auto; /* 侧边栏收起时重置right属性 */
+    width: 100%; /* 侧边栏收起时保持100%宽度不变 */
     padding-left: 40px; /* 为侧边栏展开按钮留出空间 */
 }
 
