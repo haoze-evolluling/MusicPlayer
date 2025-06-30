@@ -45,8 +45,9 @@ function createWindow() {
 
   app.commandLine.appendSwitch('--allow-file-access-from-files');
   app.commandLine.appendSwitch('--disable-web-security');
+  
   // 添加禁用GPU缓存的命令行参数
-  app.commandLine.appendSwitch('--disable-gpu-cache');
+  //app.commandLine.appendSwitch('--disable-gpu-cache');
 
   mainWindow.loadFile(path.join(__dirname, 'src/index.html'));
   
