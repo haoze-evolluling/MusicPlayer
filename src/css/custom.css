@@ -121,7 +121,7 @@
 
 #play-btn:hover {
     transform: scale(1.15);
-    box-shadow: 0 0 15px rgba(30, 136, 229, 0.5);
+
 }
 
 /* 增强进度条交互 */
@@ -310,4 +310,107 @@ button:focus, input:focus, select:focus {
         color: black !important;
         opacity: 1 !important;
     }
+}
+
+/* 增强点击反馈效果 */
+button, .tab-btn, .file-item, .current-playlist li, .bg-preview, .logo {
+    position: relative;
+    overflow: hidden;
+}
+
+/* 波纹点击效果 */
+button:active::after, 
+.tab-btn:active::after, 
+.file-item:active::after, 
+.current-playlist li:active::after,
+.bg-preview:active::after,
+.logo:active::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.5s, opacity 0.8s;
+}
+
+/* 点击效果增强 */
+.ctrl-btn:active {
+    transform: scale(0.85);
+    transition: transform 0.1s ease-out;
+}
+
+#play-btn:active {
+    transform: scale(0.9);
+    transition: transform 0.1s ease-out;
+}
+
+/* 列表项点击效果 */
+.current-playlist li:active {
+    transform: scale(0.98) translateY(-1px);
+    transition: transform 0.1s ease-out;
+}
+
+/* 文件项点击效果 */
+.file-item:active {
+    background-color: var(--bg-light);
+    transform: scale(0.99);
+    transition: transform 0.1s ease-out, background-color 0.1s ease-out;
+}
+
+/* 标签按钮点击效果 */
+.tab-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease-out;
+}
+
+/* 浮动按钮点击效果 */
+.floating-btn:active {
+    transform: scale(0.9);
+    transition: transform 0.1s ease-out;
+}
+
+/* 侧边栏折叠按钮点击效果增强 */
+.sidebar-toggle-btn:active {
+    transform: translateY(-50%) scale(0.9);
+    transition: transform 0.1s ease-out;
+}
+
+/* 进度条和音量条交互增强 */
+.progress-bar:active::after,
+.volume-bar:active::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    bottom: -10px;
+    left: -10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    z-index: -1;
+    animation: pulse 0.3s ease-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1.05);
+        opacity: 0;
+    }
+}
+
+/* 专辑封面点击效果 */
+.album-cover:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease-out;
 } 
