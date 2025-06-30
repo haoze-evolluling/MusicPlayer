@@ -117,12 +117,28 @@ class RepoAPI {
             artist = parts.slice(1).join('-').trim();
         }
         
+        // 优先使用API返回的download_url
+        const audioUrl = file.download_url || this.getRawContentUrl(file.path);
+        
+        // 构建封面和歌词URL
+        let coverUrl, lrcUrl;
+        
+        if (file.download_url) {
+            // 如果有download_url，使用相同的模式构建封面和歌词URL
+            coverUrl = file.download_url.replace('.mp3', '.jpg');
+            lrcUrl = file.download_url.replace('.mp3', '.lrc');
+        } else {
+            // 否则使用getRawContentUrl方法
+            coverUrl = this.getRawContentUrl(file.path.replace('.mp3', '.jpg'));
+            lrcUrl = this.getRawContentUrl(file.path.replace('.mp3', '.lrc'));
+        }
+        
         return {
             title,
             artist,
-            url: this.getRawContentUrl(file.path),
-            cover: this.getRawContentUrl(file.path.replace('.mp3', '.jpg')),
-            lrc: this.getRawContentUrl(file.path.replace('.mp3', '.lrc'))
+            url: audioUrl,
+            cover: coverUrl,
+            lrc: lrcUrl
         };
     }
 }

@@ -10,6 +10,11 @@ const CONFIG = {
             repo: 'haoze-evolluling/MusicStorage',
             defaultRepo: 'haoze-evolluling/MusicStorage'
         },
+        gitee: {
+            baseUrl: 'https://gitee.com/api/v5',
+            repo: 'haozelee/MusicStorage',
+            defaultRepo: 'haozelee/MusicStorage'
+        },
         local: {
             supportedFormats: ['.mp3', '.wav', '.ogg', '.flac']
         }
@@ -37,6 +42,7 @@ const CONFIG = {
         playHistory: 'konghou_history',
         lastPlaylist: 'konghou_last_playlist',
         githubRepo: 'konghou_github_repo',
+        giteeRepo: 'konghou_gitee_repo',
         lastLocalFolder: 'konghou_local_folder'
     }
 }; 

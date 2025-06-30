@@ -24,9 +24,14 @@ class MusicRepository {
     loadCustomRepoSettings() {
         // 从本地存储加载自定义仓库设置
         const customGithubRepo = localStorage.getItem(CONFIG.storage.githubRepo);
+        const customGiteeRepo = localStorage.getItem(CONFIG.storage.giteeRepo);
         
         if (customGithubRepo) {
             CONFIG.api.github.repo = customGithubRepo;
+        }
+        
+        if (customGiteeRepo) {
+            CONFIG.api.gitee.repo = customGiteeRepo;
         }
     }
     
@@ -53,7 +58,7 @@ class MusicRepository {
                 this.currentPath = ''; // 重置路径
                 
                 // 根据选择的源显示对应的按钮
-                if (this.currentSource === 'github') {
+                if (this.currentSource === 'github' || this.currentSource === 'gitee') {
                     this.setRepoBtn.style.display = 'block';
                     this.selectFolderBtn.style.display = 'none';
                 } else if (this.currentSource === 'local') {
@@ -116,6 +121,10 @@ class MusicRepository {
                             <label>GitHub 仓库:</label>
                             <input type="text" id="github-repo-input" placeholder="用户名/仓库名" value="${CONFIG.api.github.repo}">
                         </div>
+                        <div class="setting-group">
+                            <label>Gitee 仓库:</label>
+                            <input type="text" id="gitee-repo-input" placeholder="用户名/仓库名" value="${CONFIG.api.gitee.repo}">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -136,10 +145,16 @@ class MusicRepository {
         // 保存设置
         modal.querySelector('#save-repos').addEventListener('click', () => {
             const githubRepo = modal.querySelector('#github-repo-input').value.trim();
+            const giteeRepo = modal.querySelector('#gitee-repo-input').value.trim();
             
             if (githubRepo) {
                 CONFIG.api.github.repo = githubRepo;
                 localStorage.setItem(CONFIG.storage.githubRepo, githubRepo);
+            }
+            
+            if (giteeRepo) {
+                CONFIG.api.gitee.repo = giteeRepo;
+                localStorage.setItem(CONFIG.storage.giteeRepo, giteeRepo);
             }
             
             // 显示保存成功提示
@@ -155,10 +170,13 @@ class MusicRepository {
         // 重置为默认
         modal.querySelector('#reset-repos').addEventListener('click', () => {
             CONFIG.api.github.repo = CONFIG.api.github.defaultRepo;
+            CONFIG.api.gitee.repo = CONFIG.api.gitee.defaultRepo;
             
             localStorage.removeItem(CONFIG.storage.githubRepo);
+            localStorage.removeItem(CONFIG.storage.giteeRepo);
             
             modal.querySelector('#github-repo-input').value = CONFIG.api.github.defaultRepo;
+            modal.querySelector('#gitee-repo-input').value = CONFIG.api.gitee.defaultRepo;
             
             this.showToast('已恢复默认仓库设置');
         });
@@ -193,6 +211,8 @@ class MusicRepository {
         
         if (this.currentSource === 'github') {
             this.loadGithubFiles(path);
+        } else if (this.currentSource === 'gitee') {
+            this.loadGiteeFiles(path);
         } else if (this.currentSource === 'local') {
             this.loadLocalFiles(path);
         }
@@ -214,6 +234,34 @@ class MusicRepository {
             })
             .catch(error => {
                 console.error('GitHub文件加载出错:', error);
+                this.searchResults.innerHTML = `<div class="error">加载出错: ${error.message}</div>`;
+            })
+            .finally(() => {
+                this.isLoading = false;
+                this.searchBtn.disabled = false;
+                this.searchBtn.textContent = '加载';
+            });
+    }
+    
+    loadGiteeFiles(path) {
+        // 构建API URL，获取仓库内容
+        const [owner, repo] = CONFIG.api.gitee.repo.split('/');
+        const apiUrl = `${CONFIG.api.gitee.baseUrl}/repos/${owner}/${repo}/contents/${path}`;
+        
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Gitee API请求失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 保存原始API响应，便于后续使用
+                this.giteeApiResponse = data;
+                this.renderFileList(data, 'gitee');
+            })
+            .catch(error => {
+                console.error('Gitee文件加载出错:', error);
                 this.searchResults.innerHTML = `<div class="error">加载出错: ${error.message}</div>`;
             })
             .finally(() => {
@@ -291,9 +339,9 @@ class MusicRepository {
                 fileIcon = isPlayable ? '🎵' : '📄';
             }
             
-            // 如果是GitHub或本地音乐，处理路径
+            // 处理文件路径
             let filePath = '';
-            if (source === 'github') {
+            if (source === 'github' || source === 'gitee') {
                 filePath = file.path;
             } else if (source === 'local') {
                 filePath = file.path;
@@ -353,6 +401,32 @@ class MusicRepository {
                         
                         const track = githubApi.fileToTrack(file);
                         window.player.setPlaylist([track], 0);
+                    } else if (source === 'gitee') {
+                        // 找到对应的文件对象
+                        let fileData;
+                        
+                        // 如果是数组，查找匹配的文件
+                        if (Array.isArray(this.giteeApiResponse)) {
+                            fileData = this.giteeApiResponse.find(item => item.path === path);
+                        } else if (this.giteeApiResponse && this.giteeApiResponse.path === path) {
+                            // 如果是单个文件对象且路径匹配
+                            fileData = this.giteeApiResponse;
+                        }
+                        
+                        if (!fileData) {
+                            throw new Error('未找到文件数据');
+                        }
+                        
+                        // 创建完整的文件对象
+                        const file = {
+                            name: fileName,
+                            path: path,
+                            download_url: fileData.download_url || this.getDownloadUrl(path, 'gitee')
+                        };
+                        
+                        const track = giteeApi.fileToTrack(file);
+                        console.log('Gitee音轨:', track);
+                        window.player.setPlaylist([track], 0);
                     } else if (source === 'local') {
                         // 从文件列表中找到对应的文件对象
                         const files = await localMusicApi.getContents(this.currentPath);
@@ -387,6 +461,8 @@ class MusicRepository {
     getDownloadUrl(path, source) {
         if (source === 'github') {
             return `https://raw.githubusercontent.com/${CONFIG.api.github.repo}/master/${path}`;
+        } else if (source === 'gitee') {
+            return `https://gitee.com/${CONFIG.api.gitee.repo}/raw/master/${path}`;
         } else if (source === 'local') {
             return path; // 本地文件使用File API处理
         }

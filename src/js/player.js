@@ -199,6 +199,8 @@ class MusicPlayer {
         
         const currentTrack = this.playlist[this.currentTrackIndex];
         console.log('更新当前曲目信息:', currentTrack.title);
+        console.log('音频URL:', currentTrack.url);
+        console.log('歌词URL:', currentTrack.lrc);
         
         // 更新UI
         this.currentTitleElem.textContent = currentTrack.title;

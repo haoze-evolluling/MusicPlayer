@@ -39,6 +39,7 @@ class LyricsManager {
         
         return fetch(lrcUrl)
             .then(response => {
+                console.log('歌词请求状态:', response.status, response.statusText);
                 if (!response.ok) {
                     throw new Error(`歌词加载失败: ${response.status}`);
                 }
@@ -52,7 +53,35 @@ class LyricsManager {
                 return true;
             })
             .catch(error => {
-                console.error('加载歌词出错:', error);
+                console.error('加载歌词出错:', error, '歌词URL:', lrcUrl);
+                
+                // 尝试处理跨域问题：如果是Gitee URL，尝试调整URL格式
+                if (lrcUrl.includes('gitee.com') && !lrcUrl.includes('/raw/')) {
+                    console.log('尝试修正Gitee歌词URL...');
+                    const fixedUrl = lrcUrl.replace(/\/blob\//, '/raw/');
+                    console.log('修正后的URL:', fixedUrl);
+                    
+                    // 使用修正后的URL重新尝试
+                    return fetch(fixedUrl)
+                        .then(response => {
+                            if (!response.ok) throw new Error(`修正URL后仍然失败: ${response.status}`);
+                            return response.text();
+                        })
+                        .then(lrcText => {
+                            console.log('使用修正URL加载歌词成功');
+                            this.parseLRC(lrcText);
+                            this.renderLyrics();
+                            this.setLoadingState(false);
+                            return true;
+                        })
+                        .catch(err => {
+                            console.error('修正URL后仍然失败:', err);
+                            this.clearLyrics();
+                            this.setLoadingState(false);
+                            return false;
+                        });
+                }
+                
                 this.clearLyrics();
                 this.setLoadingState(false);
                 return false;
